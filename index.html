@@ -115,8 +115,15 @@ select{background:var(--field);border:0;border-radius:8px;height:36px;padding:0 
 .sheet h2{margin:0;font-size:20px}.sheet p{margin:0 0 8px;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 100px);transform:translate(-50%,8px);background:#202227;padding:10px 14px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.heat{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
-.hm{aspect-ratio:1;border-radius:3px;background:var(--field)}.hm.on{background:var(--accent-text)}.hm.now{box-shadow:inset 0 0 0 1px var(--accent-text)}.hm.fut{background:transparent}
+.gchart{position:relative;display:flex;align-items:stretch;gap:4px;height:150px;margin-top:8px}
+.gcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.gtrack{flex:1;width:100%;display:flex;align-items:flex-end}
+.gbar{width:100%;min-height:2px;border-radius:4px 4px 0 0;background:#34406A}
+.gbar.hit{background:var(--accent-text)}.gbar.now{opacity:.55}
+.gval{font-size:10px;color:var(--muted);height:12px;line-height:12px}
+.glab{font-size:10px;color:var(--muted);height:12px;line-height:12px;white-space:nowrap}
+.gline{position:absolute;left:0;right:0;border-top:1px dashed var(--faint);pointer-events:none;z-index:1}
+.gline span{position:absolute;right:0;top:-15px;font-size:10px;color:var(--muted)}
 .empty{color:var(--muted);font-size:14px;padding:12px 0;border-top:1px solid var(--line)}
 </style>
 </head>
@@ -232,13 +239,14 @@ const newRoutine = (name, mode) => ({ id: uid(), name, mode, next: 0, days: [], 
 function baseState() {
   return {
     v: 2,
-    settings: { name: '', onboarded: false, rest: { on: true, sound: true, secs: 180, per: {} }, health: true, analytics: false },
+    settings: { name: '', onboarded: false, onbStep: 0, rest: { on: true, sound: true, secs: 180, per: {} }, health: true, analytics: false },
     lib: LIB.map((x) => ({ ...x })),
     routines: [],
     activeRoutineId: null,
     history: [],
     active: null,
-    body: emptyBody()
+    body: emptyBody(),
+    goal: null
   };
 }
 function emptyBody() { return { sex: null, height: null, weights: [], fatMode: 'navy', fatManual: null, waist: null, neck: null, hip: null }; }
@@ -287,6 +295,8 @@ function migrate(s) {
     s.settings.name = s.settings.name || '';
     if (s.settings.onboarded === undefined) s.settings.onboarded = false;
     if (!s.body) s.body = emptyBody();
+    if (s.goal === undefined) s.goal = null;
+    if (s.settings.onbStep === undefined) s.settings.onbStep = 0;
     // keep built-in exercises in sync with the current muscle groups, add new built-ins
     const have = new Set(s.lib.map((x) => x.id));
     s.lib.forEach((x) => { const b = LIB.find((l) => l.id === x.id); if (b) x.muscle = b.muscle; else if (!MUSCLES.includes(x.muscle)) x.muscle = 'Other'; });
@@ -312,6 +322,7 @@ let state = load();
 const ui = {
   screen: state.active ? 'workout' : 'today', stack: [], routineId: null, dayId: null, liftId: null, period: 365,
   q: '', pickFor: null, modal: null, finish: null, nameDraft: '',
+  goalDraft: null, editExId: null, exDraft: null,
   creatingId: null, makeActive: true, muscle: 'All', body: null, showAll: false, workoutId: null,
   greet: Math.floor(Math.random() * 1000)
 };
@@ -375,7 +386,7 @@ function back() {
   ui.screen = p.screen; ui.routineId = p.routineId; ui.dayId = p.dayId; ui.liftId = p.liftId; ui.workoutId = p.workoutId; render(); window.scrollTo(0, p.y || 0);
 }
 const prevScreen = () => (ui.stack.length ? ui.stack[ui.stack.length - 1].screen : '');
-const backLabel = (fallback) => ({ today: 'Today', routines: 'Routines', progress: 'Progress', profile: 'Profile', settings: 'Settings', split: (routineById(ui.routineId) || {}).name || 'Split' }[prevScreen()] || fallback);
+const backLabel = (fallback) => ({ picker: 'Back', myEx: 'Your exercises', today: 'Today', routines: 'Routines', progress: 'Progress', profile: 'Profile', settings: 'Settings', split: (routineById(ui.routineId) || {}).name || 'Split' }[prevScreen()] || fallback);
 
 /* ---------- body: BMI + body fat ---------- */
 function latestWeight() { const w = state.body.weights; return w.length ? w[w.length - 1] : null; }
@@ -433,10 +444,42 @@ const switchHtml = (on, act, label) => `<button class="switch" role="switch" ari
 const backHtml = (label) => `<button class="back" data-act="back">${ICON.back}${esc(label)}</button>`;
 const modeName = (m) => (m === 'cycle' ? 'Cycle' : 'Weekdays');
 
+const stepHtml = (n) => `<div class="label">Step ${n} of 3</div>`;
+function vOnboarding() {
+  const st = state.settings.onbStep || 0;
+  if (st === 1) {
+    if (!ui.body) { const b = state.body; const w = latestWeight(); ui.body = { sex: b.sex, height: b.height == null ? '' : fmtNum(b.height), weight: w ? fmtNum(w.kg) : '', fatMode: b.fatMode, fatManual: '', waist: '', neck: '', hip: '' }; }
+    const d = ui.body;
+    return `<main class="screen" style="min-height:100dvh;justify-content:center">
+      <header>${stepHtml(2)}<h1 class="title">About you</h1><div class="muted" style="margin-top:6px">Used for BMI and to follow your progress. Stored only on this device.</div></header>
+      <section><div class="label">Sex</div>
+        <div class="seg">${[['male', 'Male'], ['female', 'Female'], ['', 'Not set']].map(([v, l]) => `<button data-act="bodySex" data-v="${v}" aria-pressed="${(d.sex || '') === v}">${l}</button>`).join('')}</div></section>
+      <section class="list">${numField('height', 'Height', 'cm', d.height)}${numField('weight', 'Weight', 'kg', d.weight)}</section>
+      <section><button class="btn" data-act="onbBodyNext">Continue</button><button class="btn-quiet" data-act="onbSkip">Skip for now</button></section>
+    </main>`;
+  }
+  if (st === 2) return vGoal(false);
+  return vName(false);
+}
+function vGoal(edit) {
+  if (!ui.goalDraft) ui.goalDraft = state.goal ? { ...state.goal } : { per: 'week', count: 4 };
+  const g = ui.goalDraft;
+  return `<main class="screen" style="${edit ? '' : 'min-height:100dvh;justify-content:center'}">
+    ${edit ? backHtml(backLabel('Profile')) : ''}
+    <header>${edit ? '' : stepHtml(3)}<h1 class="title">${edit ? 'Training goal' : 'Your goal'}</h1><div class="muted" style="margin-top:6px">How often do you want to train? You can change it any time.</div></header>
+    <section><div class="seg"><button data-act="goalPer" data-p="week" aria-pressed="${g.per === 'week'}">Per week</button><button data-act="goalPer" data-p="month" aria-pressed="${g.per === 'month'}">Per month</button></div></section>
+    <section><div class="headrow" style="align-items:center">
+      <button class="chip" style="width:48px;height:48px;font-size:20px" data-act="goalStep" data-d="-1" aria-label="One fewer">−</button>
+      <div style="text-align:center"><div class="big tnum" id="goalCount">${g.count}</div><div class="muted small">workouts per ${g.per}</div></div>
+      <button class="chip" style="width:48px;height:48px;font-size:20px" data-act="goalStep" data-d="1" aria-label="One more">+</button></div></section>
+    <section><button class="btn" data-act="saveGoal">${edit ? 'Save goal' : 'Start training'}</button>
+      ${edit ? (state.goal ? '<button class="btn-quiet danger" data-act="clearGoal">Remove goal</button>' : '') : '<button class="btn-quiet" data-act="onbSkip">Skip for now</button>'}</section>
+  </main>`;
+}
 function vName(edit) {
   return `<main class="screen" style="min-height:100dvh;justify-content:center">
     ${edit ? backHtml(backLabel('Profile')) : ''}
-    <header><h1 class="title">${edit ? 'Your name' : 'Welcome'}</h1><div class="muted" style="margin-top:6px">${edit ? 'Shown in your greeting on the home screen.' : 'What should we call you?'}</div></header>
+    <header>${edit ? '' : stepHtml(1)}<h1 class="title">${edit ? 'Your name' : 'Welcome'}</h1><div class="muted" style="margin-top:6px">${edit ? 'Shown in your greeting on the home screen.' : 'What should we call you?'}</div></header>
     <section><label class="label" for="firstname">First name</label>
       <input id="firstname" class="text" maxlength="30" autocomplete="given-name" autocapitalize="words" enterkeyhint="done" data-input="nameDraft" value="${esc(ui.nameDraft)}"></section>
     <section><button class="btn" data-act="saveName">${edit ? 'Save' : 'Continue'}</button>
@@ -445,7 +488,7 @@ function vName(edit) {
 }
 
 function vToday() {
-  if (!state.settings.onboarded) { ui.screen = 'welcome'; ui.nameDraft = ''; return vName(false); }
+  if (!state.settings.onboarded) { ui.screen = 'welcome'; return vOnboarding(); }
   const a = state.active;
   const name = state.settings.name;
   const date = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -508,7 +551,7 @@ function vToday() {
     <div class="below">
       <section><div class="label">Routines</div><div class="hscroll">${cards}</div></section>
       <section class="list"><div class="label">Repeat a workout</div>${repeat}</section>
-      <section><div class="label">This week</div><div class="week" aria-label="Days trained this week">${week}</div></section>
+      <section><div class="headrow"><span class="label">This week</span>${goalNowHtml()}</div><div class="week" aria-label="Days trained this week">${week}</div></section>
     </div>
   </main>${tabsHtml()}`;
 }
@@ -704,10 +747,10 @@ function pickListHtml() {
   const target = ui.pickFor === 'workout' ? (state.active ? state.active.ex : []) : ((dayById(ui.dayId) || { ex: [] }).ex);
   const added = new Set(target.map((e) => e.exId));
   const groupOf = (x) => (MUSCLES.includes(x.muscle) ? x.muscle : 'Other');
-  const hits = state.lib.filter((x) => (ui.muscle === 'All' || groupOf(x) === ui.muscle) && (!q || x.name.toLowerCase().includes(q) || groupOf(x).toLowerCase().includes(q)));
-  const exact = state.lib.some((x) => x.name.toLowerCase() === q);
+  const hits = state.lib.filter((x) => !x.hidden && (ui.muscle === 'All' || groupOf(x) === ui.muscle) && (!q || x.name.toLowerCase().includes(q) || groupOf(x).toLowerCase().includes(q)));
+  const exact = state.lib.some((x) => !x.hidden && x.name.toLowerCase() === q);
   const newGroup = ui.muscle === 'All' ? 'Other' : ui.muscle;
-  let h = q && !exact ? `<section class="list"><button class="row" data-act="createEx"><span class="pos">Create “${esc(ui.q.trim().slice(0, 40))}”</span><span class="right">in ${esc(newGroup)}</span></button></section>` : '';
+  let h = `<section class="list"><button class="row" data-act="newCustom"><span class="pos">+ ${q && !exact ? 'Create “' + esc(ui.q.trim().slice(0, 40)) + '”' : 'Create your own exercise'}</span><span class="right">${q && !exact ? 'in ' + esc(newGroup) : ''}</span></button></section>`;
   MUSCLES.forEach((m) => {
     const xs = hits.filter((x) => groupOf(x) === m).sort((a, b) => a.name.localeCompare(b.name));
     if (!xs.length) return;
@@ -845,12 +888,6 @@ function vProfile() {
   const s = state.settings; const H = state.history;
   const now = new Date(); const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
   const hours = Math.round(H.reduce((t, w) => t + (w.end - w.start), 0) / 3600000);
-  // activity heatmap, 12 weeks, Monday first
-  const thisMon = startOfDay(Date.now() - todayIndex() * DAY); const from = thisMon - 11 * 7 * DAY;
-  const days = new Set(H.filter((w) => w.start >= from).map((w) => Math.round((startOfDay(w.start) - from) / DAY)));
-  const todayN = Math.round((startOfDay(Date.now()) - from) / DAY);
-  let cells = '';
-  for (let n = 0; n < 84; n++) cells += `<span class="hm${days.has(n) ? ' on' : ''}${n === todayN ? ' now' : ''}${n > todayN ? ' fut' : ''}"></span>`;
   const list = (ui.showAll ? H.slice().reverse() : H.slice(-8).reverse()).map((w) => `<button class="row" data-act="openWorkout" data-id="${esc(w.id)}"><span><span class="row-main" style="display:block">${esc(w.name)}</span><span class="sub">${new Date(w.start).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span></span><span class="right">${fmtDur(w.end - w.start)} · ${w.ex.reduce((t, e) => t + e.sets.length, 0)} sets</span></button>`).join('') || '<div class="empty">No workouts yet.</div>';
   const w = latestWeight(); const bmi = w ? bmiOf(w.kg, state.body.height) : null;
   return `<main class="screen tabbed">
@@ -862,15 +899,84 @@ function vProfile() {
       <div><div class="muted small">Workouts</div><div class="stat-v">${H.length}</div></div>
       <div><div class="muted small">This month</div><div class="stat-v">${H.filter((x) => x.start >= monthStart).length}</div></div>
       <div><div class="muted small">Hours</div><div class="stat-v">${hours}</div></div></div></section>
-    <section><div class="label">Activity · last 12 weeks</div><div class="heat" aria-label="Training days in the last 12 weeks">${cells}</div></section>
+    ${goalChartHtml()}
     <section class="list"><div class="label">Body</div>
       <button class="row" data-act="openBody"><span class="row-main">Weight, height, BMI, body fat</span><span class="right">${w ? fmtNum(w.kg) + ' kg' + (bmi ? ' · BMI ' + fmtNum(Math.round(bmi * 10) / 10) : '') : 'Add'}</span></button></section>
     <section class="list"><div class="label">Workouts</div>${list}
       ${H.length > 8 ? `<button class="link" style="align-self:flex-start" data-act="toggleAll">${ui.showAll ? 'Show fewer' : 'Show all ' + H.length}</button>` : ''}</section>
+    <section class="list"><div class="label">Your exercises</div>
+      <button class="row" data-act="openMyEx"><span class="row-main">Custom exercises</span><span class="right">${state.lib.filter((x) => x.custom && !x.hidden).length}</span></button></section>
     <section class="list"><div class="label">Your data</div>
       <button class="row" data-act="exportCsv"><span class="row-main">Export all workouts</span><span class="right">CSV</span></button>
       <button class="row" data-act="importClick"><span class="row-main">Import from Hevy or Strong</span><span class="right">CSV</span></button></section>
   </main>${tabsHtml()}`;
+}
+/* Goals: how often you hit the target you set */
+function goalPeriods() {
+  const g = state.goal; const per = g ? g.per : 'week'; const out = [];
+  if (per === 'week') {
+    const mon = startOfDay(Date.now() - todayIndex() * DAY);
+    for (let k = 11; k >= 0; k--) { const s = mon - k * 7 * DAY; out.push({ s, e: s + 7 * DAY, label: k === 0 ? 'Now' : new Date(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric' }).replace('/', '.') }); }
+  } else {
+    const now = new Date();
+    for (let k = 5; k >= 0; k--) { const s = new Date(now.getFullYear(), now.getMonth() - k, 1).getTime(); out.push({ s, e: new Date(now.getFullYear(), now.getMonth() - k + 1, 1).getTime(), label: k === 0 ? 'Now' : new Date(s).toLocaleDateString('en-GB', { month: 'short' }) }); }
+  }
+  out.forEach((b) => { b.n = state.history.filter((w) => w.start >= b.s && w.start < b.e).length; });
+  return out;
+}
+function goalStats() {
+  const g = state.goal; const P = goalPeriods(); const from = P[0].s;
+  const inRange = state.history.filter((w) => w.start >= from);
+  const days = new Set(inRange.map((w) => startOfDay(w.start))).size;
+  const weeks = Math.max(1, (Date.now() - from) / (7 * DAY));
+  const done = P.slice(0, -1); // the current period is not over yet
+  const hit = g ? done.filter((b) => b.n >= g.count).length : 0;
+  const rate = g && done.length ? done.reduce((t, b) => t + Math.min(1, b.n / g.count), 0) / done.length : null;
+  return { g, P, days, avg: inRange.length / weeks, hit, done: done.length, rate };
+}
+function goalNowHtml() {
+  const g = state.goal; if (!g) return '';
+  const cur = goalPeriods().slice(-1)[0];
+  return `<span class="small ${cur.n >= g.count ? 'pos' : 'muted'}">${cur.n} of ${g.count} this ${g.per}</span>`;
+}
+function goalChartHtml() {
+  const st = goalStats(); const g = st.g; const unit = g ? g.per : 'week';
+  const max = g ? Math.max(1.5, ...st.P.map((b) => b.n / g.count)) : Math.max(1, ...st.P.map((b) => b.n));
+  const bars = st.P.map((b, i) => {
+    const v = g ? b.n / g.count : b.n; const h = Math.round(v / max * 100);
+    const isNow = i === st.P.length - 1; const ok = g && b.n >= g.count;
+    return `<div class="gcol"><span class="gval">${g ? Math.round(v * 100) + '%' : b.n}</span><div class="gtrack"><div class="gbar${ok ? ' hit' : ''}${isNow ? ' now' : ''}" style="height:${h}%"></div></div><span class="glab">${b.label}</span></div>`;
+  }).join('');
+  const line = g ? `<div class="gline" style="bottom:calc(16px + ${(1 / max).toFixed(3)} * 118px)"><span>Goal</span></div>` : '';
+  const head = g
+    ? `<div style="display:flex;align-items:baseline;gap:8px"><span class="big">${st.rate === null ? '—' : Math.round(st.rate * 100) + ' %'}</span><span class="muted small">of your goal of ${g.count} per ${g.per}</span></div>`
+    : `<button class="row" data-act="openGoal"><span class="row-main">Set a training goal</span><span class="pos small">Set</span></button>`;
+  const desc = g ? `Workouts per ${unit} as a share of your goal of ${g.count}, last ${st.P.length} ${unit}s` : `Workouts per week, last 12 weeks`;
+  return `<section><div class="headrow"><span class="label">Goal · last ${st.P.length} ${unit}s</span>${g ? '<button class="link" style="min-height:32px" data-act="openGoal">Edit goal</button>' : ''}</div>
+    ${head}
+    <div class="gchart" role="img" aria-label="${esc(desc)}">${line}${bars}</div>
+    <div class="stats" style="margin-top:8px">
+      <div><div class="muted small">Goal hit</div><div class="stat-v">${g ? st.hit + '<span class="muted small"> of ' + st.done + '</span>' : '—'}</div></div>
+      <div><div class="muted small">Days trained</div><div class="stat-v">${st.days}</div></div>
+      <div><div class="muted small">Avg per week</div><div class="stat-v">${fmtNum(Math.round(st.avg * 10) / 10)}</div></div></div></section>`;
+}
+
+/* Custom exercises */
+function vCustomEx() {
+  const d = ui.exDraft; const editing = !!ui.editExId;
+  return `<main class="screen">${backHtml('Back')}
+    <header><h1 class="title">${editing ? 'Edit exercise' : 'New exercise'}</h1><div class="muted small" style="margin-top:6px">Logged with weight (kg) and reps.</div></header>
+    <section><label class="label" for="exname">Name</label><input id="exname" class="text" maxlength="40" autocomplete="off" data-input="exName" value="${esc(d.name)}" placeholder="e.g. Sam Sulek forearm curl"></section>
+    <section><div class="label">Muscle group</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" role="group" aria-label="Muscle group">${MUSCLES.map((m) => `<button class="chip${d.muscle === m ? ' on' : ''}" data-act="exMuscle" data-m="${esc(m)}" aria-pressed="${d.muscle === m}">${esc(m)}</button>`).join('')}</div></section>
+    <section><button class="btn" data-act="saveCustom">${editing ? 'Save changes' : ui.pickFor && prevScreen() === 'picker' ? 'Create and add' : 'Create exercise'}</button>
+      ${editing ? '<button class="btn-quiet danger" data-act="askHideEx">Delete exercise</button>' : ''}</section></main>`;
+}
+function vMyEx() {
+  const xs = state.lib.filter((x) => x.custom && !x.hidden).sort((a, b) => a.name.localeCompare(b.name));
+  return `<main class="screen">${backHtml('Profile')}
+    <header class="headrow"><h1 class="title">Your exercises</h1><button class="iconbtn" data-act="newCustom" aria-label="New exercise">${ICON.plus}</button></header>
+    <section class="list">${xs.length ? xs.map((x) => `<button class="row" data-act="editCustom" data-id="${esc(x.id)}"><span class="row-main">${esc(x.name)}</span><span class="right">${esc(x.muscle)}</span></button>`).join('') : '<div class="empty">No custom exercises yet. Tap + to make one.</div>'}</section></main>`;
 }
 function vWorkoutDetail() {
   const w = state.history.find((x) => x.id === ui.workoutId);
@@ -911,7 +1017,7 @@ function vPrivacy() {
     <section><button class="btn-quiet" data-act="askDemo">Load demo data</button></section></main>`;
 }
 
-const VIEWS = { body: vBody, profile: vProfile, workoutDetail: vWorkoutDetail, welcome: () => vName(false), name: () => vName(true), today: vToday, workout: vWorkout, finish: vFinish, rest: vRest, routines: vRoutines, split: vSplit, day: vDay, picker: vPicker, progress: vProgress, lift: vLift, settings: vSettings, privacy: vPrivacy };
+const VIEWS = { goal: () => vGoal(true), customEx: vCustomEx, myEx: vMyEx, body: vBody, profile: vProfile, workoutDetail: vWorkoutDetail, welcome: vOnboarding, name: () => vName(true), today: vToday, workout: vWorkout, finish: vFinish, rest: vRest, routines: vRoutines, split: vSplit, day: vDay, picker: vPicker, progress: vProgress, lift: vLift, settings: vSettings, privacy: vPrivacy };
 function render() {
   $app.innerHTML = (VIEWS[ui.screen] || vToday)();
   updateRestBar();
@@ -1072,10 +1178,61 @@ const A = {
     const n = ui.nameDraft.replace(/[<>]/g, '').trim().slice(0, 30);
     const editing = ui.screen === 'name';
     if (!n && !editing) { toast('Enter your first name, or tap Skip'); focusInput('firstname'); return; }
-    state.settings.name = n; state.settings.onboarded = true; save(true);
-    if (editing) { back(); toast(n ? 'Name saved' : 'Name removed'); } else { ui.stack = []; ui.screen = 'today'; render(); }
+    state.settings.name = n;
+    if (editing) { save(true); back(); toast(n ? 'Name saved' : 'Name removed'); } else { state.settings.onbStep = 1; ui.body = null; save(true); render(); }
   },
-  skipName() { state.settings.onboarded = true; save(true); ui.stack = []; ui.screen = 'today'; render(); },
+  skipName() { A.onbSkip(); },
+  onbSkip() {
+    const st = state.settings.onbStep || 0;
+    if (st >= 2) { state.settings.onboarded = true; ui.goalDraft = null; save(true); ui.stack = []; ui.screen = 'today'; render(); return; }
+    state.settings.onbStep = st + 1; ui.body = null; save(true); render();
+  },
+  onbBodyNext() {
+    const d = ui.body; const out = {}; const bad = [];
+    [['height', 100, 250], ['weight', 25, 400]].forEach(([k, lo, hi]) => {
+      const raw = String(d[k] ?? '').trim(); if (!raw) { out[k] = null; return; }
+      const v = parseNum(raw); if (v === null || v < lo || v > hi) bad.push(k); else out[k] = v;
+    });
+    if (bad.length) { bad.forEach((k) => document.getElementById(k).classList.add('err')); toast(bad.includes('height') ? 'Height must be 100–250 cm' : 'Weight must be 25–400 kg'); return; }
+    const b = state.body; b.sex = d.sex || null; if (out.height != null) b.height = out.height;
+    if (out.weight != null) { const last = latestWeight(); if (last && startOfDay(last.t) === startOfDay(Date.now())) last.kg = out.weight; else b.weights.push({ t: Date.now(), kg: out.weight }); }
+    state.settings.onbStep = 2; ui.body = null; ui.goalDraft = null; save(true); render();
+  },
+  goalPer(d) { const g = ui.goalDraft; if (g.per !== d.p) { g.per = d.p; g.count = d.p === 'week' ? Math.min(14, Math.max(1, Math.round(g.count / 4.3))) : Math.min(31, Math.round(g.count * 4.3)); } render(); },
+  goalStep(d) { const g = ui.goalDraft; g.count = Math.min(g.per === 'week' ? 14 : 31, Math.max(1, g.count + Number(d.d))); render(); },
+  saveGoal() {
+    state.goal = { ...ui.goalDraft }; ui.goalDraft = null;
+    if (!state.settings.onboarded) { state.settings.onboarded = true; save(true); ui.stack = []; ui.screen = 'today'; render(); toast('Goal set: ' + state.goal.count + ' per ' + state.goal.per); return; }
+    save(true); back(); toast('Goal saved');
+  },
+  clearGoal() { state.goal = null; ui.goalDraft = null; save(true); back(); toast('Goal removed'); },
+  openGoal() { ui.goalDraft = null; go('goal'); },
+  openMyEx: () => go('myEx'),
+  newCustom() {
+    const fromPicker = ui.screen === 'picker';
+    ui.editExId = null;
+    ui.exDraft = { name: fromPicker ? ui.q.trim().slice(0, 40) : '', muscle: fromPicker && ui.muscle !== 'All' ? ui.muscle : 'Other' };
+    if (!fromPicker) ui.pickFor = null;
+    go('customEx'); focusInput('exname');
+  },
+  editCustom(d) { const x = exById(d.id); if (!x) return; ui.editExId = x.id; ui.pickFor = null; ui.exDraft = { name: x.name, muscle: x.muscle }; go('customEx'); },
+  exMuscle(d) { ui.exDraft.muscle = d.m; render(); },
+  saveCustom() {
+    const name = ui.exDraft.name.replace(/[<>]/g, '').trim().slice(0, 40);
+    if (!name) { toast('Give the exercise a name'); focusInput('exname'); return; }
+    if (state.lib.some((x) => !x.hidden && x.id !== ui.editExId && x.name.toLowerCase() === name.toLowerCase())) { toast('You already have an exercise called ' + name); focusInput('exname'); return; }
+    if (ui.editExId) { const x = exById(ui.editExId); x.name = name; x.muscle = ui.exDraft.muscle; ui.editExId = null; save(true); back(); toast('Exercise updated'); return; }
+    const x = { id: 'c_' + uid(), name, muscle: ui.exDraft.muscle, custom: true }; state.lib.push(x);
+    if (prevScreen() === 'picker' && ui.pickFor) { ui.stack.pop(); addExercise(x.id); return; } // back past the picker to the day/workout
+    save(true); back(); toast(name + ' created');
+  },
+  askHideEx() {
+    const x = exById(ui.editExId); if (!x) return;
+    confirmSheet({ title: 'Delete ' + x.name + '?', text: 'It is removed from your exercise list and your splits. Past workouts keep their sets.', ok: 'Delete exercise', danger: true, onOk() {
+      x.hidden = true; state.routines.forEach((r) => r.days.forEach((d) => { d.ex = d.ex.filter((e) => e.exId !== x.id); }));
+      ui.editExId = null; save(true); back(); toast('Exercise deleted');
+    } });
+  },
   editName() { ui.nameDraft = state.settings.name; go('name'); focusInput('firstname'); },
   // profile + settings
   openSettings: () => go('settings'),
@@ -1225,9 +1382,9 @@ const A = {
     } });
   },
   askDemo() {
-    confirmSheet({ title: 'Load demo data?', text: 'This replaces your splits and workouts with two sample splits and a year of workouts. Your name and body stats are kept.', ok: 'Load demo data', onOk() {
-      const keep = { name: state.settings.name, onboarded: state.settings.onboarded }; const body = state.body;
-      state = demoState(); Object.assign(state.settings, keep); state.body = body; save(true); ui.stack = []; ui.screen = 'today'; render(); toast('Demo data loaded');
+    confirmSheet({ title: 'Load demo data?', text: 'This replaces your splits and workouts with two sample splits and a year of workouts. Your name, body stats and goal are kept.', ok: 'Load demo data', onOk() {
+      const keep = { name: state.settings.name, onboarded: state.settings.onboarded }; const body = state.body; const goal = state.goal;
+      state = demoState(); Object.assign(state.settings, keep); state.body = body; state.goal = goal; save(true); ui.stack = []; ui.screen = 'today'; render(); toast('Demo data loaded');
     } });
   }
 };
@@ -1237,6 +1394,7 @@ const INPUT = {
   dayName(el) { const d = dayById(ui.dayId); if (d) { d.name = el.value.slice(0, 40); save(); } },
   routineName(el) { const r = routineById(ui.routineId); if (r) { r.name = el.value.slice(0, 40); save(); } },
   nameDraft(el) { ui.nameDraft = el.value; },
+  exName(el) { if (ui.exDraft) ui.exDraft.name = el.value; },
   bodyField(el) { if (!ui.body) return; ui.body[el.dataset.f] = el.value; el.classList.remove('err'); const r = document.getElementById('bodyResults'); if (r) r.innerHTML = bodyResultsHtml(); },
   search(el) { ui.q = el.value; document.getElementById('picklist').innerHTML = pickListHtml(); }
 };
