@@ -5,6 +5,9 @@ A minimal, dark strength-training tracker (EU first: kg, cm, Monday weeks, data 
 **Live app:** https://lumpaclumpa.github.io/Fitness-app/ (on iPhone: Share → Add to Home Screen)
 
 - `index.html`: the whole app in one file, no dependencies
+- `manifest.webmanifest`, `sw.js`, `icon-*.png`, `apple-touch-icon.png`: app icon and offline support (bump `CACHE` in `sw.js` on every release)
 - `tests/test_app.py`: end-to-end test that clicks every button (Playwright + Chromium)
 
 Run the test: `python3 tests/test_app.py . /tmp/shots`
+
+The changelog lives in the app under Settings → Changelog (`CHANGELOG` in `index.html`).

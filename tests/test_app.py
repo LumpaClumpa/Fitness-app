@@ -7,7 +7,9 @@ SHOTS = sys.argv[2]
 os.makedirs(SHOTS, exist_ok=True)
 
 handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=APP_DIR)
-handler.log_message = lambda *a: None
+class Quiet(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, *a): pass
+handler = functools.partial(Quiet, directory=APP_DIR)
 srv = http.server.ThreadingHTTPServer(("127.0.0.1", 8765), handler)
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 URL = "http://127.0.0.1:8765/index.html"
@@ -104,13 +106,7 @@ with sync_playwright() as p:
     act(page, "splitMenu"); page.mouse.click(380, 600)
     check(page.locator(".menu").count() == 0, "click outside closes the split menu")
     shot(page, "01_today")
-    # repeat a workout
-    last_name = st(page, "state.history[state.history.length-1].name")
-    act(page, "repeat", 0)
-    expect(page.locator(".wk-title .t")).to_have_text(last_name); ok(f"Repeat a workout starts {last_name}")
-    check(st(page, "state.active.ex.length") == st(page, "state.history[state.history.length-1].ex.length"), "repeat copies exercises")
-    act(page, "askDiscard"); act(page, "modalOk")
-    expect(page.locator("#greeting")).to_be_visible()
+    check(page.get_by_text("Repeat a workout").count() == 0 and page.locator('main.home [data-act="repeat"]').count() == 0, "home has no Repeat a workout section")
     # avatar -> settings
     page.locator(".avatar").click()
     expect(page.get_by_role("heading", name="Profile")).to_be_visible(); ok("avatar opens profile")
@@ -700,6 +696,179 @@ with sync_playwright() as p:
     expect(page.locator("#rname")).to_be_visible(); ok("Create a split from empty home")
     act(page, "cancelSplit")
     expect(page.locator("#greeting")).to_be_visible(); ok("Cancel returns to home")
+
+    # ================= v0.7 =================
+    page.evaluate("""() => { closeModal(); state = demoState(); state.settings.onboarded = true; state.settings.name = 'Tobias'; state.goal = {per:'week', count:3};
+      state.badges = {}; state.exNotes = {}; state.recapSeen = null; syncBadges(); ui.stack = []; tab('today'); }""")
+    check(page.locator('#hero [data-act="repeat"]').count() == 0 and page.get_by_text("Repeat a workout").count() == 0, "home has no 'Repeat a workout' section")
+    # recap prompt on home, gone once opened
+    expect(page.locator("#recapHome")).to_be_visible(); ok("home offers last week's recap")
+    page.locator("#recapHome").click()
+    check(page.locator("#recapSlide").get_attribute("data-slide") == "intro", "recap opens on the intro slide")
+    n_slides = st(page, "ui.recap.n")
+    check(n_slides >= 6, f"weekly recap has {n_slides} slides")
+    shot(page, "70_recap_intro")
+    act(page, "recapNext")  # tap zone on the right
+    check(page.locator("#recapSlide").get_attribute("data-slide") == "workouts", "tapping the right side goes forward")
+    check(page.locator("#recapCount").inner_text() == str(st(page, "recapData('week').W.length")), "recap counts last week's workouts")
+    shot(page, "71_recap_workouts")
+    act(page, "recapPrev")
+    check(page.locator("#recapSlide").get_attribute("data-slide") == "intro", "tapping the left side goes back")
+    seen = set()
+    for i in range(n_slides):
+        seen.add(page.locator("#recapSlide").get_attribute("data-slide"))
+        if i == 3: shot(page, "72_recap_volume")
+        page.locator("#recapBtn").click()
+    check({"intro", "workouts", "time", "streak", "outro"} <= seen, f"recap slides seen: {sorted(seen)}")
+    expect(page.locator("#greeting")).to_be_visible(); ok("Done on the last slide closes the recap")
+    check(page.locator("#recapHome").count() == 0, "recap prompt hidden once seen")
+    # monthly recap from the profile, close button
+    page.locator('nav [data-s="profile"]').click()
+    page.locator('[data-act="openRecap"][data-p="month"]').click()
+    check(page.get_by_text("Monthly recap").is_visible() and st(page, "ui.recap.per") == "month", "monthly recap opens from Profile")
+    shot(page, "73_recap_month")
+    act(page, "closeRecap")
+    expect(page.locator("#badgeCount")).to_be_visible(); ok("close returns to Profile")
+    # empty period
+    page.evaluate("() => { state.history = state.history.filter(w => w.start >= periodRange('week', 1).e); ui.recap = {per:'week', i:0}; go('recap'); }")
+    check(page.locator("#recapSlide").get_attribute("data-slide") == "empty" and st(page, "ui.recap.n") == 1, "recap for a week with no workouts is one friendly slide")
+    page.evaluate("() => { state = demoState(); state.settings.onboarded = true; state.goal = {per:'week', count:3}; state.badges = {}; syncBadges(); ui.stack = []; ui.recap = null; tab('profile'); }")
+
+    # achievements
+    got, total = st(page, "Object.keys(state.badges).length"), st(page, "BADGES.length")
+    check(page.locator("#badgeCount").inner_text() == f"{got} of {total}", f"profile shows {got} of {total} achievements")
+    check(st(page, "Object.values(state.badges).every(t => t > 0 && t <= Date.now())"), "earned achievements dated from history")
+    check(st(page, "state.badges.first === state.history.slice().sort((a,b)=>a.start-b.start)[0].end"), "'First workout' dated to the first workout")
+    act(page, "openBadges")
+    check(page.locator("#allBadges .bcell").count() == total, "achievements screen lists every badge")
+    check(page.locator("#allBadges .bcell.off").count() == total - got, "locked badges are dimmed")
+    shot(page, "74_achievements")
+    page.locator('#allBadges [data-id="first"]').click()
+    check("Unlocked" in page.locator("#badgeWhen").inner_text(), "unlocked badge shows its date")
+    act(page, "modalCancel")
+    page.locator('#allBadges [data-id="w1000"]').click()
+    check(re.match(r"^\d+ / 1\.000$", page.locator("#badgeProg").inner_text()) is not None, f"locked badge shows progress ({page.locator('#badgeProg').inner_text()})")
+    shot(page, "75_badge_locked")
+    act(page, "modalCancel")
+    check(st(page, "(() => { const s = state; state = baseState(); const r = historyScan().S.workouts === 0 && syncBadges().length === 0; state = s; return r; })()"), "no achievements without workouts")
+    check(st(page, "(() => { const s = JSON.parse(JSON.stringify(state)); const h = state.history; const t = new Date(); t.setHours(6,0,0,0); state.history = [{id:'x', name:'Early', start:t.getTime(), end:t.getTime()+3600000, ex:[{exId:'bench', sets:[{kg:60,reps:5}]}]}]; const r = historyScan().S.early === 1; state = s; return r; })()"), "early-bird workouts are counted")
+
+    # new achievement shown on the summary
+    page.evaluate("() => { state.history = []; state.badges = {}; ui.stack = []; tab('today'); }")
+    page.locator('#hero [data-act="start"]').click()
+    page.locator('.card').first.locator('input').nth(0).fill('40'); page.locator('.card').first.locator('input').nth(1).fill('8')
+    page.locator('[data-act="toggleSet"]').first.click()
+    act(page, "askFinish"); page.locator('.sheet [data-act="saveWorkout"]').click()
+    expect(page.locator("#newBadges")).to_be_visible()
+    check("First workout" in page.locator("#newBadges").inner_text(), "summary celebrates the new 'First workout' achievement")
+    shot(page, "76_summary_badge")
+    act(page, "summaryDone")
+
+    # exercise menu: reorder, notes, plates, warm-ups
+    page.evaluate("() => { state = demoState(); state.settings.onboarded = true; state.exNotes = {}; ui.stack = []; tab('today'); }")
+    page.locator('#hero [data-act="start"]').click()
+    first, second = st(page, "state.active.ex[0].exId"), st(page, "state.active.ex[1].exId")
+    act(page, "exMenu")
+    shot(page, "77_ex_menu")
+    check(page.locator('.sheet [data-act="moveEx"][data-d="-1"]').is_disabled(), "first exercise cannot move up")
+    page.locator('.sheet [data-act="moveEx"][data-d="1"]').click()
+    check(st(page, "state.active.ex[0].exId") == second and st(page, "state.active.ex[1].exId") == first, "Move down swaps the exercise with the next one")
+    act(page, "exMenu", 1); page.locator('.sheet [data-act="moveEx"][data-d="-1"]').click()
+    check(st(page, "state.active.ex[0].exId") == first, "Move up puts it back")
+    act(page, "exMenu"); page.locator('.sheet [data-act="editNote"]').click()
+    page.locator("#noteText").fill("Seat on 4 <b>")
+    act(page, "saveNote")
+    check(page.locator(".card").first.locator(".exnote").inner_text().strip() == "Seat on 4 b", "note shows on the exercise card (tags stripped)")
+    check(st(page, f"state.exNotes['{first}']") == "Seat on 4 b", "note saved for next time")
+    # plate calculator
+    act(page, "exMenu"); page.locator('.sheet [data-act="plateCalc"]').click()
+    page.locator("#plateKg").fill("100")
+    check([t.strip() for t in page.locator("#plateOut .plate").all_inner_texts()] == ["25", "15"], "100 kg on a 20 kg bar: 25 + 15 per side")
+    page.locator('#barSeg [data-b="15"]').click()
+    check([t.strip() for t in page.locator("#plateOut .plate").all_inner_texts()] == ["25", "15", "2,5"], "15 kg bar: 100 kg = 25 + 15 + 2,5 per side")
+    page.locator("#plateKg").fill("101")
+    check(st(page, "state.settings.bar") == 15 and "short" in page.locator("#plateNote").inner_text(), "15 kg bar: closest load flagged when it can't be exact")
+    shot(page, "78_plates")
+    page.locator('#barSeg [data-b="20"]').click()
+    page.locator("#plateKg").fill("20")
+    check("Just the bar" in page.locator("#plateOut").inner_text(), "bar only when total equals the bar")
+    act(page, "modalCancel")
+    # warm-ups
+    page.locator('.card').first.locator('input').nth(0).fill('100')
+    n_sets = st(page, "state.active.ex[0].sets.length")
+    act(page, "exMenu"); page.locator('.sheet [data-act="warmupCalc"]').click()
+    shot(page, "79_warmups")
+    w_rows = page.locator(".sheet .row").count()
+    act(page, "addWarmups")
+    check(st(page, "state.active.ex[0].sets.length") == n_sets + w_rows and st(page, f"state.active.ex[0].sets.slice(0,{w_rows}).every(s => s.type === 'warmup' && Number(s.kg) < 100)"), f"{w_rows} warm-up sets added before the working sets, all lighter")
+    check(st(page, "JSON.stringify(warmupsFor(100, 20))") == '[{"kg":20,"reps":10},{"kg":40,"reps":5},{"kg":60,"reps":3},{"kg":80,"reps":2}]' or st(page, "warmupsFor(100,20).length") >= 3, f"warm-up ramp {st(page, 'JSON.stringify(warmupsFor(100, 20))')}")
+    check(st(page, "warmupsFor(20, 20).length") == 0, "no warm-ups when the work weight is just the bar")
+    act(page, "exMenu"); page.locator('.sheet [data-act="removeExercise"]').click()
+    if page.locator('.sheet [data-act="modalOk"]').count(): page.locator('.sheet [data-act="modalOk"]').click()
+    check(st(page, "state.active.ex[0].exId") != first, "Remove exercise drops it from the workout")
+    # finish, then the note comes back next time
+    page.evaluate(f"() => {{ ui.pickFor = 'workout'; go('picker'); addExercise('{first}'); }}")
+    check(st(page, f"state.active.ex.find(e => e.exId === '{first}').note") == "Seat on 4 b", "note is shown again when the exercise comes back")
+    act(page, "askDiscard"); act(page, "modalOk")
+
+    # reorder in the day editor
+    page.evaluate("() => { ui.stack = []; tab('routines'); go('day', {dayId: activeRoutine().days.find(d => d.ex.length > 1).id}); }")
+    a0, a1 = st(page, "dayById(ui.dayId).ex[0].exId"), st(page, "dayById(ui.dayId).ex[1].exId")
+    page.locator('[data-act="moveDayEx"][data-d="1"]').first.click()
+    check(st(page, "dayById(ui.dayId).ex[0].exId") == a1 and st(page, "dayById(ui.dayId).ex[1].exId") == a0, "day editor: move an exercise down")
+    page.locator('[data-act="moveDayEx"][data-d="-1"]').nth(1).click()
+    check(st(page, "dayById(ui.dayId).ex[0].exId") == a0, "day editor: and back up")
+
+    # edit a past workout
+    page.evaluate("() => { ui.stack = []; tab('profile'); }")
+    page.locator('[data-act="openWorkout"]').first.click()
+    wid = st(page, "ui.workoutId")
+    act(page, "editWorkout")
+    expect(page.get_by_role("heading", name="Edit workout")).to_be_visible(); ok("Edit workout opens")
+    shot(page, "80_edit_workout")
+    page.locator("#ewName").fill("Edited session")
+    kg_in = page.locator('[data-input="ewField"][data-f="kg"]').first
+    kg_in.fill("123,5")
+    n_before = st(page, f"state.history.find(w => w.id === '{wid}').ex[0].sets.length")
+    page.locator('[data-act="ewAddSet"]').first.click()
+    page.locator('[data-act="ewSave"]').click()
+    check(page.locator(".num.err").count() >= 1 and st(page, "ui.screen") == "editWorkout", "empty reps in a new set is flagged, nothing saved")
+    page.locator('[data-act="ewRemoveSet"]').nth(n_before).click()
+    page.locator('[data-act="ewType"]').first.click()
+    page.locator('[data-act="ewSave"]').click()
+    w = st(page, f"state.history.find(w => w.id === '{wid}')")
+    check(w["name"] == "Edited session" and w["ex"][0]["sets"][0]["kg"] == 123.5 and w["ex"][0]["sets"][0].get("type") == "warmup", "edits saved: name, weight (da-DK comma) and set type")
+    check(st(page, "ui.screen") == "workoutDetail" and "Edited session" in page.locator("h1").inner_text(), "back on the workout with the new name")
+
+    # sets per muscle on Progress
+    page.evaluate("() => tab('progress')")
+    check(page.locator(".msrow").count() >= 5 and page.locator(".mstick").count() == page.locator(".msrow").count(), "weekly sets per muscle with a 10-set marker")
+    check(page.locator(".msfill.ok").count() >= 1, "muscles at 10+ sets are highlighted")
+    shot(page, "81_progress_sets")
+
+    # settings: version + changelog
+    page.locator('nav [data-s="profile"]').click(); act(page, "openSettings")
+    check(page.locator("#appVersion").inner_text() == "0.7", "Settings shows version 0.7")
+    act(page, "openChangelog")
+    check(page.locator("#v0_7").is_visible() and page.locator("#v0_1").is_visible() and page.locator("#v0_7 .cl").count() >= 8, "changelog lists 0.7 down to 0.1")
+    check(page.locator("#v0_7").get_by_text("Current").is_visible(), "current version marked")
+    shot(page, "82_changelog")
+    act(page, "back")
+    expect(page.locator("#appVersion")).to_be_visible(); ok("changelog back returns to Settings")
+
+    # PWA: manifest, icons and offline
+    man = page.evaluate("() => fetch('manifest.webmanifest').then(r => r.json())")
+    check(man["display"] == "standalone" and len(man["icons"]) == 3, "web app manifest with icons")
+    check(all(page.evaluate(f"() => fetch('{i['src']}').then(r => r.ok)") for i in man["icons"]) and page.evaluate("() => fetch('apple-touch-icon.png').then(r => r.ok)"), "all icons load")
+    page.evaluate("() => navigator.serviceWorker.ready")
+    page.reload(); page.evaluate("() => navigator.serviceWorker.ready"); time.sleep(0.5)
+    check(page.evaluate("() => !!navigator.serviceWorker.controller"), "service worker controls the page")
+    ctx.set_offline(True)
+    page.reload()
+    expect(page.locator("#app main")).to_be_visible(); ok("app loads with no network (offline)")
+    shot(page, "83_offline")
+    ctx.set_offline(False)
+    page.reload()
 
     # migration from the older single-routine save format
     page.evaluate("""() => { window.save = () => {}; localStorage.setItem('traeningsapp.v1', JSON.stringify({v:1, settings:{rest:{on:true,sound:true,secs:120,per:{}},health:true,analytics:false},
