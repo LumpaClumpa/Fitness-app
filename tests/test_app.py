@@ -228,6 +228,13 @@ with sync_playwright() as p:
     act(page, "goFinish")
     hist = st(page, "state.history.length")
     act(page, "saveWorkout")
+    expect(page.locator("#sumHead")).to_be_visible()
+    hd = page.locator("#sumHead").inner_text()
+    check(hd.endswith(", Tobias!"), f"summary headline ({hd})")
+    sm = page.locator("main").inner_text()
+    check("Personal records" in sm and "Streak" in sm and "Weight" in sm, "summary shows PRs, weight and streak")
+    shot(page, "06b_summary")
+    act(page, "summaryDone")
     expect(page.locator("#greeting")).to_be_visible()
     check(st(page, "state.history.length") == hist + 1, "Save workout adds to history")
     check(st(page, "state.active") is None, "active workout cleared")
@@ -249,6 +256,54 @@ with sync_playwright() as p:
     check(page.locator('[data-act="saveWorkout"]').is_disabled(), "Save disabled when no sets ticked")
     page.locator('.btn-quiet.danger[data-act="askDiscard"]').click(); act(page, "modalOk")
     expect(page.locator("#greeting")).to_be_visible(); ok("Discard from finish screen")
+
+    # ---- set types, supersets, cardio, summary
+    page.get_by_role("button", name="Start workout").click()
+    wname = page.locator(".wk-title .t").inner_text()
+    page.locator('[data-act="setType"][data-e="0"][data-s="0"]').click()
+    check(st(page, "state.active.ex[0].sets[0].type") == "warmup" and page.locator('[data-act="setType"][data-e="0"][data-s="0"]').inner_text() == "W", "tap set number marks warm-up (W)")
+    for want in ("drop", "failure", "normal"):
+        page.locator('[data-act="setType"][data-e="0"][data-s="0"]').click()
+        check(st(page, "state.active.ex[0].sets[0].type") == want, f"set type cycles to {want}")
+    page.locator('[data-act="setType"][data-e="0"][data-s="0"]').click()
+    act(page, "toggleSet", 0); act(page, "toggleSet", 1); act(page, "restSkip")
+    shot(page, "05b_set_types")
+    page.locator('[data-act="superset"][data-e="1"]').click()
+    check(st(page, "state.active.ex[1].ss && state.active.ex[1].ss === state.active.ex[2].ss"), "link superset with next exercise")
+    check(page.get_by_text("Superset with").first.is_visible(), "superset label shown")
+    page.locator('[data-act="toggleSet"][data-e="1"][data-s="0"]').click()
+    expect(page.locator("#restbar")).to_be_hidden(); ok("no rest between superset exercises")
+    page.locator('[data-act="toggleSet"][data-e="2"][data-s="0"]').click()
+    expect(page.locator("#restbar")).to_be_visible(); ok("rest starts after the last exercise in the superset")
+    act(page, "restSkip")
+    shot(page, "05c_superset")
+    page.locator('[data-act="superset"][data-e="1"]').click()
+    check(st(page, "!state.active.ex[1].ss && !state.active.ex[2].ss"), "unlink superset")
+    act(page, "pickForWorkout")
+    page.locator('[data-act="muscle"][data-m="Cardio"]').click()
+    page.get_by_role("button", name="Treadmill Incline Walk").click()
+    tl = page.locator("section.ex").last
+    check(tl.locator('input[data-input="min"]').get_attribute("placeholder") == "37", "cardio shows last time's minutes")
+    tl.locator('[data-act="addSet"]').click()
+    tl = page.locator("section.ex").last
+    tl.locator('input[data-input="min"]').nth(1).fill("10"); tl.locator('input[data-input="inc"]').nth(1).fill("50")
+    tl.locator('[data-act="toggleSet"]').nth(1).click()
+    check("err" in tl.locator('input[data-input="inc"]').nth(1).get_attribute("class"), "cardio rejects 50 % incline")
+    tl.locator('[data-act="removeSet"]').click()
+    page.locator("section.ex").last.locator('[data-act="toggleSet"]').first.click()
+    check(st(page, "state.active.ex[state.active.ex.length-1].sets[0].done") is True, "cardio set ticked with last time's values")
+    check(page.get_by_text("km/h average").first.is_visible(), "cardio shows average speed")
+    shot(page, "05d_cardio")
+    act(page, "goFinish"); act(page, "saveWorkout")
+    expect(page.locator("#sumHead")).to_be_visible()
+    sm = page.locator("main").inner_text()
+    check("Cardio" in sm and "37 min" in sm, "summary includes cardio")
+    act(page, "summaryDone")
+    last_w = st(page, "state.history[state.history.length-1]")
+    check(last_w["name"] == wname and last_w["ex"][0]["sets"][0].get("type") == "warmup", "warm-up type saved in history")
+    check(st(page, "state.history[state.history.length-1].ex.some(e => e.exId === 'treadmill' && e.sets[0].min === 37)"), "cardio set saved (37 min)")
+    check(st(page, "volOf([{kg:100,reps:5,type:'warmup'},{kg:100,reps:5}])") == 500, "warm-ups excluded from volume")
+    check(st(page, "streakInfo().n") > 0 and "in a row" in page.locator("#streak").inner_text(), f"streak on home ({page.locator('#streak').inner_text()})")
 
     # ---- Routines: several splits
     page.locator('nav [data-s="routines"]').click()
@@ -372,6 +427,19 @@ with sync_playwright() as p:
     check(page.locator("svg[role=img]").count() == 1, "lift detail shows chart")
     shot(page, "13_lift")
     act(page, "back"); expect(page.get_by_role("heading", name="Progress")).to_be_visible(); ok("lift back")
+    # training chart
+    for m, end in (("reps", "reps"), ("time", " h"), ("volume", " kg")):
+        page.locator(f'[data-act="metric"][data-m="{m}"]').click()
+        check(page.locator("#trainTotal").inner_text().endswith(end), f"training chart: {m} ({page.locator('#trainTotal').inner_text()})")
+    check(page.locator(".gcol").count() == 12, "training chart has 12 weeks")
+    shot(page, "12b_training_chart")
+    # e1RM confidence
+    page.get_by_role("button", name=re.compile("^Lateral Raise")).click()
+    check(page.locator(".big").first.inner_text().startswith("≈"), f"high-rep e1RM marked as rough ({page.locator('.big').first.inner_text()})")
+    act(page, "back")
+    page.get_by_role("button", name=re.compile("^Treadmill Incline Walk")).click()
+    check("min" in page.locator(".big").first.inner_text(), "cardio detail page")
+    act(page, "back")
 
     # ---- Body stats in Progress
     check(page.get_by_text("24,6 · Healthy weight").is_visible(), "Progress shows BMI from onboarding")
@@ -401,6 +469,27 @@ with sync_playwright() as p:
     act(page, "saveBody")
     check(st(page, "state.body.weights.length") == 1 and st(page, "state.body.weights[0].kg") == 83, "same-day weight updates instead of duplicating")
     check(page.get_by_text("16 %").first.is_visible(), "manual body fat shown")
+    # progress photos
+    from PIL import Image as _I
+    _I.new("RGB", (1200, 1600), (40, 60, 120)).save(f"{SHOTS}/photo.png")
+    act(page, "openBody")
+    with page.expect_file_chooser() as fc:
+        act(page, "addPhoto")
+    fc.value.set_files(f"{SHOTS}/photo.png"); page.wait_for_selector(".pthumb")
+    check(page.locator(".pthumb").count() == 1, "progress photo added")
+    check(st(page, "(() => { const i = new Image(); i.src = photos[0].data; return photos[0].data.startsWith('data:image/jpeg'); })()"), "photo downscaled to JPEG")
+    shot(page, "13d_photos")
+    page.locator(".pthumb").first.click()
+    expect(page.get_by_role("img", name="Progress photo")).to_be_visible(); ok("open photo")
+    act(page, "askDeletePhoto"); act(page, "modalOk"); time.sleep(0.3)
+    check(page.locator(".pthumb").count() == 0 and st(page, "photos.length") == 0, "delete photo")
+    _I.new("RGB", (800, 1000), (90, 40, 40)).save(f"{SHOTS}/photo2.png")
+    with page.expect_file_chooser() as fc:
+        act(page, "addPhoto")
+    fc.value.set_files(f"{SHOTS}/photo2.png"); page.wait_for_selector(".pthumb")
+    page.reload(); page.locator('nav [data-s="progress"]').click(); act(page, "openBody"); page.wait_for_selector(".pthumb")
+    check(page.locator(".pthumb").count() == 1, "photo survives reload (IndexedDB)")
+    act(page, "back")
 
     # ---- Profile (all your data) + settings behind the gear
     page.locator('nav [data-s="profile"]').click()
@@ -427,6 +516,9 @@ with sync_playwright() as p:
     check(page.get_by_role("heading", name="New exercise").is_visible(), "duplicate name rejected")
     page.locator("#exname").fill("Sam Sulek forearm curl"); page.locator('[data-act="exMuscle"][data-m="Forearms"]').click(); act(page, "saveCustom")
     check(page.locator('[data-act="editCustom"]').count() == n_c + 1, "create custom exercise from Profile")
+    act(page, "newCustom"); page.locator("#exname").fill("Assault Bike"); page.locator('[data-act="exType"][data-t="cardio"]').click(); act(page, "saveCustom")
+    check(st(page, "state.lib.some(x => x.name === 'Assault Bike' && x.type === 'cardio' && x.muscle === 'Cardio')"), "custom cardio exercise")
+    n_c += 1
     page.get_by_role("button", name=re.compile("Sam Sulek")).click()
     page.locator("#exname").fill("Sulek wrist curl"); act(page, "saveCustom")
     check(st(page, "state.lib.some(x => x.name === 'Sulek wrist curl' && x.muscle === 'Forearms')"), "rename custom exercise")
@@ -456,7 +548,7 @@ with sync_playwright() as p:
         act(page, "exportCsv")
     path = f"{SHOTS}/export.csv"; dl.value.save_as(path)
     lines = open(path, encoding="utf-8").read().splitlines()
-    check(lines[0] == "Date,Workout Name,Exercise Name,Set Order,Weight,Reps" and len(lines) > 100, f"Export CSV ({len(lines)-1} sets)")
+    check(lines[0] == "Date,Workout Name,Exercise Name,Set Order,Weight,Reps,Distance,Seconds,Incline,Set Type" and len(lines) > 100, f"Export CSV ({len(lines)-1} sets)")
     act(page, "editName"); page.locator("#firstname").fill("Tobi"); act(page, "saveName")
     expect(page.get_by_role("heading", name="Profile")).to_be_visible()
     check(st(page, "state.settings.name") == "Tobi", "edit first name from Profile")
@@ -475,6 +567,7 @@ with sync_playwright() as p:
     hist_before = st(page, "state.history.length")
     act(page, "askDeleteAll"); act(page, "modalOk")
     check(st(page, "state.history.length") == 0 and st(page, "state.routines.length") == 0 and st(page, "state.body.weights.length") == 0, "Delete all data")
+    time.sleep(0.3); check(st(page, "photos.length") == 0 and page.evaluate("async () => (await PDB.all()).length") == 0, "Delete all also removes photos")
     expect(page.get_by_role("heading", name="Welcome")).to_be_visible(); ok("after delete, name screen shows again")
     act(page, "skipName"); act(page, "onbSkip"); act(page, "onbSkip")
     check(st(page, "state.goal") is None, "skipping all steps leaves no goal")
@@ -489,13 +582,15 @@ with sync_playwright() as p:
     check(st(page, "state.history.length") > 100, "Import our own CSV")
     n_imp = st(page, "state.history.length")
     hevy = f"{SHOTS}/hevy.csv"
-    open(hevy, "w").write('"title","start_time","end_time","description","exercise_title","superset_id","exercise_notes","set_index","set_type","weight_kg","reps"\n'
-                          '"<img src=x onerror=alert(1)>","1 Jan 2026, 10:00","1 Jan 2026, 11:00","","Bench Press","","","0","normal","80","8"\n'
-                          '"Push","1 Jan 2026, 10:00","","","=HYPERLINK(1)","","","0","normal","20","10"\n')
+    open(hevy, "w").write('"title","start_time","end_time","description","exercise_title","superset_id","exercise_notes","set_index","set_type","weight_kg","reps","distance_km","duration_seconds"\n'
+                          '"<img src=x onerror=alert(1)>","1 Jan 2026, 10:00","1 Jan 2026, 11:00","","Bench Press","","","0","normal","80","8","",""\n'
+                          '"Push","1 Jan 2026, 10:00","","","=HYPERLINK(1)","","","0","normal","20","10","",""\n'
+                          '"Cardio day","2 Jan 2026, 10:00","","","Outdoor Run","","","0","normal","","","5","1800"\n')
     with page.expect_file_chooser() as fc:
         act(page, "importClick")
     fc.value.set_files(hevy); time.sleep(0.6)
-    check(st(page, "state.history.length") == n_imp + 2, "Hevy CSV import")
+    check(st(page, "state.history.length") == n_imp + 3, "Hevy CSV import incl. cardio")
+    check(st(page, "state.lib.some(x => x.name === 'Outdoor Run' && x.type === 'cardio') && state.history.some(w => w.name === 'Cardio day' && w.ex[0].sets[0].min === 30 && w.ex[0].sets[0].km === 5)"), "imported cardio: 30 min, 5 km")
     check(page.locator("img").count() == 0, "imported HTML is escaped (no XSS)")
     page.locator('nav [data-s="today"]').click()
     act(page, "newRoutine")
