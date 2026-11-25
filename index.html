@@ -24,14 +24,14 @@ button:disabled{cursor:not-allowed}
 .muted{color:var(--muted)}.small{font-size:13px}.tnum{font-variant-numeric:tabular-nums}
 .pos{color:var(--accent-text)}.danger{color:var(--danger)}
 section{display:flex;flex-direction:column;gap:8px}
-.list{gap:0}.list>.label{padding-bottom:8px}
+.list{gap:0}.list>.label,.list>.headrow{padding-bottom:8px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:48px;padding:4px 0;border-top:1px solid var(--line);font-size:15px;width:100%}
 button.row{text-align:left}
 button.row:hover .row-main{color:#fff}
 .row .sub{font-size:13px;color:var(--muted)}
 .row .right{font-size:13px;color:var(--muted);text-align:right;flex:none}
 .headrow{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
-.btn{height:48px;width:100%;text-align:center;border-radius:12px;background:var(--accent);color:#fff;font-size:16px;font-weight:600}
+.btn{height:48px;width:100%;border-radius:12px;background:var(--accent);color:#fff;font-size:16px;font-weight:600;text-align:center}
 .btn:hover{background:var(--accent-hi)}
 .btn:disabled{background:var(--field);color:var(--muted)}
 .btn.red{background:#7A2A23}
@@ -67,17 +67,35 @@ select{background:var(--field);border:0;border-radius:8px;height:36px;padding:0 
 .stepper button{width:32px;height:32px;border-radius:8px;background:var(--field);text-align:center}
 .stepper span{min-width:52px;text-align:center;font-size:13px;color:var(--muted)}
 .x{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+/* home */
+.home{padding:0 20px}
+.home-top{position:relative;height:calc(100svh - 84px - env(safe-area-inset-bottom));min-height:540px}
+.home-head{position:absolute;top:0;left:0;right:0;padding-top:calc(env(safe-area-inset-top) + 40px);z-index:1}
+.home-bar{display:flex;align-items:center;justify-content:space-between}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center}
+.greet{margin:20px 0 0;font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.hero{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;text-align:center;gap:6px;pointer-events:none}
+.hero>*{pointer-events:auto}
+.hero-day{font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.hero .btn{height:56px;font-size:17px;margin-top:18px;border-radius:14px}
+.below{display:flex;flex-direction:column;gap:32px;padding-bottom:calc(env(safe-area-inset-bottom) + 108px)}
+.hscroll{display:flex;gap:12px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+.rcard{flex:0 0 190px;min-height:84px;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;text-align:left}
+.rcard.on{border-color:var(--focus)}
+.rcard .n{font-size:15px;font-weight:600}
 /* workout */
 .wk-top{position:sticky;top:0;z-index:4;background:var(--bg);border-bottom:1px solid var(--line)}
 .wk-head{display:grid;grid-template-columns:88px 1fr 88px;align-items:center;padding:calc(env(safe-area-inset-top) + 44px) 20px 12px}
 .wk-head .x{width:44px;height:44px;justify-content:flex-start}
 .wk-title{text-align:center}.wk-title .t{font-size:16px;font-weight:600}
-.btn-sm{text-align:center;justify-self:end;height:36px;padding:0 14px;border-radius:10px;background:var(--accent);color:#fff;font-size:14px;font-weight:600}
+.btn-sm{justify-self:end;height:36px;padding:0 14px;border-radius:10px;background:var(--accent);color:#fff;font-size:14px;font-weight:600;text-align:center}
 .restbar{padding:10px 20px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
 .restbar[hidden]{display:none}
 .restrow{display:flex;justify-content:space-between;align-items:center}
 .restrow .v{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;margin-left:8px}
-.chip{text-align:center;height:36px;padding:0 10px;border-radius:8px;background:var(--field);font-size:14px}
+.chip{height:36px;padding:0 10px;border-radius:8px;background:var(--field);font-size:14px;text-align:center;white-space:nowrap;flex:none}
+.chip.on{background:var(--accent);color:#fff}
 .track{height:2px;background:var(--line)}.fill{height:2px;background:var(--focus);width:0}
 .wk-body{padding:24px 20px calc(env(safe-area-inset-bottom) + 40px);display:flex;flex-direction:column;gap:32px}
 .ex{gap:4px}
@@ -97,6 +115,8 @@ select{background:var(--field);border:0;border-radius:8px;height:36px;padding:0 
 .sheet h2{margin:0;font-size:20px}.sheet p{margin:0 0 8px;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 100px);transform:translate(-50%,8px);background:#202227;padding:10px 14px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.heat{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
+.hm{aspect-ratio:1;border-radius:3px;background:var(--field)}.hm.on{background:var(--accent-text)}.hm.now{box-shadow:inset 0 0 0 1px var(--accent-text)}.hm.fut{background:transparent}
 .empty{color:var(--muted);font-size:14px;padding:12px 0;border-top:1px solid var(--line)}
 </style>
 </head>
@@ -133,6 +153,8 @@ const median = (a) => { const s = [...a].sort((x, y) => x - y); const m = Math.f
 const e1 = (s) => s.kg > 0 ? s.kg * (1 + s.reps / 30) : s.reps; // Epley; bodyweight sets compare on reps
 const bestSet = (sets) => sets.reduce((b, s) => (!b || e1(s) > e1(b) ? s : b), null);
 const fmtSet = (s) => (s.kg > 0 ? fmtNum(s.kg) + ' kg' : 'BW') + ' × ' + s.reps;
+const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const todayIndex = () => (new Date().getDay() + 6) % 7; // Monday = 0
 function parseNum(v) {
   const t = String(v ?? '').trim().replace(',', '.');
   if (!/^\d{1,4}(\.\d{1,2})?$/.test(t)) return null;
@@ -147,6 +169,9 @@ const ICON = {
   list: svg('<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>'),
   chart: svg('<path d="M3 20h18M6 16v-5M11 16V6M16 16v-8"/>'),
   sliders: svg('<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>'),
+  user: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>', 20, 1.8),
+  profile: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>'),
+  gear: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
   x: svg('<path d="M6 6l12 12M18 6L6 18"/>', 20, 2),
   xs: svg('<path d="M7 7l10 10M17 7L7 17"/>', 16, 2),
   check: svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 18, 2.4),
@@ -155,20 +180,26 @@ const ICON = {
 };
 
 /* ---------- seed data ---------- */
+const MUSCLES = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Forearms', 'Quads', 'Hamstrings', 'Glutes & hips', 'Calves', 'Abs', 'Other'];
 const LIB = [
-  ['pendulum', 'Pendulum Squat', 'Legs'], ['hipthrust', 'Hip Thrust', 'Glutes'], ['legext', 'Leg Extension', 'Legs'],
-  ['legcurl', 'Seated Leg Curl', 'Hamstrings'], ['adduction', 'Seated Hip Adduction', 'Legs'], ['calf', 'Standing Calf Raise', 'Calves'],
-  ['rdl', 'Romanian Deadlift', 'Hamstrings'], ['squat', 'Back Squat', 'Legs'], ['legpress', 'Leg Press', 'Legs'],
-  ['deadlift', 'Deadlift', 'Back'], ['bench', 'Bench Press', 'Chest'], ['incdb', 'Incline Dumbbell Press', 'Chest'],
-  ['flye', 'Cable Flye', 'Chest'], ['dip', 'Chest Dip', 'Chest'], ['ohp', 'Overhead Press', 'Shoulders'],
-  ['lateral', 'Lateral Raise', 'Shoulders'], ['rearfly', 'Rear Delt Fly', 'Shoulders'], ['facepull', 'Face Pull', 'Shoulders'],
+  ['bench', 'Bench Press', 'Chest'], ['incdb', 'Incline Dumbbell Press', 'Chest'], ['flye', 'Cable Flye', 'Chest'],
+  ['dip', 'Chest Dip', 'Chest'], ['pecdeck', 'Pec Deck', 'Chest'], ['pushup', 'Push-up', 'Chest'],
   ['pullup', 'Pull-up', 'Back'], ['row', 'Barbell Row', 'Back'], ['latpd', 'Lat Pulldown', 'Back'],
-  ['cablerow', 'Seated Cable Row', 'Back'], ['shrug', 'Shrug', 'Back'], ['curl', 'Barbell Curl', 'Biceps'],
-  ['preacher', 'Preacher Curl', 'Biceps'], ['hammer', 'Hammer Curl', 'Biceps'], ['pushdown', 'Triceps Pushdown', 'Triceps'],
-  ['skull', 'Skull Crusher', 'Triceps'], ['wristcurl', 'Wrist Curl', 'Forearms'], ['crunch', 'Cable Crunch', 'Abs']
+  ['cablerow', 'Seated Cable Row', 'Back'], ['tbar', 'T-Bar Row', 'Back'], ['deadlift', 'Deadlift', 'Back'], ['shrug', 'Shrug', 'Back'],
+  ['ohp', 'Overhead Press', 'Shoulders'], ['arnold', 'Arnold Press', 'Shoulders'], ['lateral', 'Lateral Raise', 'Shoulders'],
+  ['rearfly', 'Rear Delt Fly', 'Shoulders'], ['facepull', 'Face Pull', 'Shoulders'],
+  ['curl', 'Barbell Curl', 'Biceps'], ['preacher', 'Preacher Curl', 'Biceps'], ['hammer', 'Hammer Curl', 'Biceps'], ['cablecurl', 'Cable Curl', 'Biceps'],
+  ['pushdown', 'Triceps Pushdown', 'Triceps'], ['skull', 'Skull Crusher', 'Triceps'], ['ohext', 'Overhead Triceps Extension', 'Triceps'],
+  ['wristcurl', 'Wrist Curl', 'Forearms'], ['revcurl', 'Reverse Curl', 'Forearms'],
+  ['squat', 'Back Squat', 'Quads'], ['pendulum', 'Pendulum Squat', 'Quads'], ['hack', 'Hack Squat', 'Quads'], ['legpress', 'Leg Press', 'Quads'],
+  ['legext', 'Leg Extension', 'Quads'], ['bulgarian', 'Bulgarian Split Squat', 'Quads'],
+  ['rdl', 'Romanian Deadlift', 'Hamstrings'], ['legcurl', 'Seated Leg Curl', 'Hamstrings'], ['lyingcurl', 'Lying Leg Curl', 'Hamstrings'],
+  ['hipthrust', 'Hip Thrust', 'Glutes & hips'], ['adduction', 'Seated Hip Adduction', 'Glutes & hips'], ['abduction', 'Seated Hip Abduction', 'Glutes & hips'],
+  ['calf', 'Standing Calf Raise', 'Calves'], ['seatedcalf', 'Seated Calf Raise', 'Calves'],
+  ['crunch', 'Cable Crunch', 'Abs'], ['legraise', 'Hanging Leg Raise', 'Abs'], ['abwheel', 'Ab Wheel Rollout', 'Abs']
 ].map(([id, name, muscle]) => ({ id, name, muscle, custom: false }));
 
-const DAYS = [
+const PPL = [
   ['Push A', ['bench', 3, 6, 10], ['incdb', 3, 8, 12], ['ohp', 3, 6, 10], ['lateral', 3, 12, 15], ['dip', 2, 8, 12], ['pushdown', 3, 10, 15]],
   ['Pull A', ['pullup', 3, 6, 10], ['row', 3, 6, 10], ['latpd', 3, 8, 12], ['facepull', 3, 12, 15], ['curl', 3, 8, 12], ['preacher', 2, 6, 10]],
   ['Legs A', ['squat', 3, 5, 8], ['rdl', 3, 6, 10], ['legpress', 3, 10, 15], ['legcurl', 3, 10, 15], ['calf', 4, 10, 15]],
@@ -182,6 +213,10 @@ const DAYS = [
   ['Pull B', ['deadlift', 3, 3, 6], ['pullup', 3, 6, 10], ['row', 3, 6, 10], ['shrug', 3, 10, 15], ['preacher', 2, 6, 10]],
   ['Rest']
 ];
+const UPPER_LOWER = [
+  ['Upper', ['bench', 3, 6, 10], ['row', 3, 6, 10], ['ohp', 3, 6, 10], ['latpd', 3, 8, 12], ['lateral', 3, 12, 15], ['curl', 2, 8, 12], ['pushdown', 2, 10, 15]],
+  ['Lower', ['squat', 3, 5, 8], ['rdl', 3, 6, 10], ['legext', 3, 10, 15], ['legcurl', 3, 10, 15], ['calf', 3, 10, 15]]
+];
 // Current working sets (from the screenshots where known). Older demo sessions scale down from these.
 const TOP = {
   pendulum: [60, 6, 55, 7], hipthrust: [260, 6, 240, 7], legext: [105, 13, 105, 11], adduction: [165, 12], legcurl: [70, 10], calf: [120, 12],
@@ -191,28 +226,36 @@ const TOP = {
   pushdown: [45, 12], skull: [40, 10], wristcurl: [30, 15], crunch: [80, 10]
 };
 
+const makeDays = (spec) => spec.map(([name, ...ex]) => ({ id: uid(), name, rest: name === 'Rest', ex: ex.map(([exId, sets, min, max]) => ({ exId, sets, min, max })) }));
+const newRoutine = (name, mode) => ({ id: uid(), name, mode, next: 0, days: [], week: [null, null, null, null, null, null, null] });
+
 function baseState() {
   return {
-    v: 1,
-    settings: { rest: { on: true, sound: true, secs: 180, per: {} }, health: true, analytics: false },
+    v: 2,
+    settings: { name: '', onboarded: false, rest: { on: true, sound: true, secs: 180, per: {} }, health: true, analytics: false },
     lib: LIB.map((x) => ({ ...x })),
-    routine: { name: 'My routine', mode: 'cycle', next: 0, days: [], week: [null, null, null, null, null, null, null] },
+    routines: [],
+    activeRoutineId: null,
     history: [],
-    active: null
+    active: null,
+    body: emptyBody()
   };
 }
+function emptyBody() { return { sex: null, height: null, weights: [], fatMode: 'navy', fatManual: null, waist: null, neck: null, hip: null }; }
 function demoState() {
   const s = baseState();
-  s.routine.name = 'PPL / Arnold';
   s.settings.rest.per = { legext: 90 };
-  s.routine.days = DAYS.map(([name, ...ex]) => ({ id: uid(), name, rest: name === 'Rest', ex: ex.map(([exId, sets, min, max]) => ({ exId, sets, min, max })) }));
-  const id = (n) => (s.routine.days.find((d) => d.name === n) || {}).id || null;
-  s.routine.week = [id('Push A'), id('Pull A'), id('Legs B'), null, id('Chest / Back A'), id('Arms / Shoulders A'), null];
-  s.routine.next = 6; // Day 7: Legs B
+  const ppl = newRoutine('PPL / Arnold', 'cycle'); ppl.days = makeDays(PPL);
+  const id = (n) => (ppl.days.find((d) => d.name === n) || {}).id || null;
+  ppl.week = [id('Push A'), id('Pull A'), id('Legs B'), null, id('Chest / Back A'), id('Arms / Shoulders A'), null];
+  ppl.next = 6; // Day 7: Legs B
+  const ul = newRoutine('Upper / Lower', 'week'); ul.days = makeDays(UPPER_LOWER);
+  ul.week = [ul.days[0].id, ul.days[1].id, null, ul.days[0].id, ul.days[1].id, null, null];
+  s.routines = [ppl, ul]; s.activeRoutineId = ppl.id;
   const today = startOfDay(Date.now());
-  const n = s.routine.days.length;
+  const n = ppl.days.length;
   for (let back = 1; back <= 364; back++) {
-    const day = s.routine.days[((6 - back) % n + n) % n];
+    const day = ppl.days[((6 - back) % n + n) % n];
     if (day.rest) continue;
     const weeks = back / 7;
     const start = today - back * DAY + 17 * 3600000;
@@ -234,11 +277,27 @@ function demoState() {
   return s;
 }
 
-/* ---------- persistence ---------- */
+/* ---------- persistence (+ migration from the single-routine version) ---------- */
+function migrate(s) {
+  if (s && s.v === 1 && s.routine) {
+    const r = { id: uid(), ...s.routine };
+    s.routines = [r]; s.activeRoutineId = r.id; delete s.routine; s.v = 2;
+  }
+  if (s && s.v === 2) {
+    s.settings.name = s.settings.name || '';
+    if (s.settings.onboarded === undefined) s.settings.onboarded = false;
+    if (!s.body) s.body = emptyBody();
+    // keep built-in exercises in sync with the current muscle groups, add new built-ins
+    const have = new Set(s.lib.map((x) => x.id));
+    s.lib.forEach((x) => { const b = LIB.find((l) => l.id === x.id); if (b) x.muscle = b.muscle; else if (!MUSCLES.includes(x.muscle)) x.muscle = 'Other'; });
+    LIB.forEach((b) => { if (!have.has(b.id)) s.lib.push({ ...b }); });
+  }
+  return s;
+}
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) { const s = JSON.parse(raw); if (s && s.v === 1 && s.routine && Array.isArray(s.history)) return s; }
+    if (raw) { const s = migrate(JSON.parse(raw)); if (s && s.v === 2 && Array.isArray(s.routines) && Array.isArray(s.history)) return s; }
   } catch (e) { console.warn('Could not read saved data', e); }
   return demoState();
 }
@@ -250,12 +309,23 @@ function save(now) {
 }
 
 let state = load();
-const ui = { screen: state.active ? 'workout' : 'today', stack: [], dayId: null, liftId: null, period: 365, q: '', pickFor: null, modal: null, finish: null };
+const ui = {
+  screen: state.active ? 'workout' : 'today', stack: [], routineId: null, dayId: null, liftId: null, period: 365,
+  q: '', pickFor: null, modal: null, finish: null, nameDraft: '',
+  creatingId: null, makeActive: true, muscle: 'All', body: null, showAll: false, workoutId: null,
+  greet: Math.floor(Math.random() * 1000)
+};
 
 /* ---------- lookups ---------- */
 const exById = (id) => state.lib.find((x) => x.id === id);
 const exName = (id) => (exById(id) || { name: 'Unknown exercise' }).name;
-const dayById = (id) => state.routine.days.find((d) => d.id === id);
+const routineById = (id) => state.routines.find((r) => r.id === id) || null;
+const activeRoutine = () => routineById(state.activeRoutineId);
+function findDay(dayId) {
+  for (const r of state.routines) { const i = r.days.findIndex((d) => d.id === dayId); if (i >= 0) return { r, d: r.days[i], i }; }
+  return null;
+}
+const dayById = (id) => (findDay(id) || {}).d;
 const restFor = (exId) => state.settings.rest.per[exId] ?? state.settings.rest.secs;
 function lastSets(exId) {
   for (let i = state.history.length - 1; i >= 0; i--) {
@@ -264,30 +334,64 @@ function lastSets(exId) {
   }
   return null;
 }
-function clampNext() { const r = state.routine; if (!r.days.length) r.next = 0; else if (r.next >= r.days.length || r.next < 0) r.next = 0; }
+function clampNext(r) { if (!r) return; if (!r.days.length || r.next >= r.days.length || r.next < 0) r.next = 0; }
 function nextDay() {
-  const r = state.routine;
-  if (!r.days.length) return null;
-  if (r.mode === 'cycle') { clampNext(); return { day: r.days[r.next], index: r.next }; }
-  const wd = (new Date().getDay() + 6) % 7;
-  const i = r.days.findIndex((d) => d.id === r.week[wd]);
-  return i < 0 ? { day: null, index: -1 } : { day: r.days[i], index: i };
+  const r = activeRoutine();
+  if (!r) return null;
+  if (!r.days.length) return { r, day: null, index: -1 };
+  if (r.mode === 'cycle') { clampNext(r); return { r, day: r.days[r.next], index: r.next }; }
+  const i = r.days.findIndex((d) => d.id === r.week[todayIndex()]);
+  return { r, day: i < 0 ? null : r.days[i], index: i };
 }
-function nextTrainingAfter(i) {
-  const d = state.routine.days;
+function nextTrainingAfter(r, i) {
+  const d = r.days;
   for (let k = 1; k <= d.length; k++) { const x = d[(i + k) % d.length]; if (!x.rest && x.ex.length) return { day: x, index: (i + k) % d.length }; }
   return null;
+}
+function typicalMinutes(day) {
+  const ws = state.history.filter((w) => w.dayId === day.id).slice(-5);
+  if (ws.length) return Math.round(ws.reduce((t, w) => t + (w.end - w.start), 0) / ws.length / 60000);
+  return day.ex.reduce((t, e) => t + e.sets * 3, 0);
+}
+
+/* ---------- greeting ---------- */
+function greeting() {
+  const h = new Date().getHours();
+  const tod = h < 5 ? 'Late session' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  const lines = [tod, tod, "Let's do this", 'Ready when you are', 'Time to lift', 'Good to see you'];
+  const line = lines[ui.greet % lines.length];
+  const n = state.settings.name;
+  return n ? line + ', ' + n : line;
 }
 
 /* ---------- navigation ---------- */
 function go(screen, ctx = {}) {
-  ui.stack.push({ screen: ui.screen, dayId: ui.dayId, liftId: ui.liftId, y: window.scrollY });
+  ui.stack.push({ screen: ui.screen, routineId: ui.routineId, dayId: ui.dayId, liftId: ui.liftId, workoutId: ui.workoutId, y: window.scrollY });
   Object.assign(ui, ctx); ui.screen = screen; render(); window.scrollTo(0, 0);
 }
 function back() {
   const p = ui.stack.pop();
   if (!p) { ui.screen = state.active ? 'workout' : 'today'; render(); return; }
-  ui.screen = p.screen; ui.dayId = p.dayId; ui.liftId = p.liftId; render(); window.scrollTo(0, p.y || 0);
+  ui.screen = p.screen; ui.routineId = p.routineId; ui.dayId = p.dayId; ui.liftId = p.liftId; ui.workoutId = p.workoutId; render(); window.scrollTo(0, p.y || 0);
+}
+const prevScreen = () => (ui.stack.length ? ui.stack[ui.stack.length - 1].screen : '');
+const backLabel = (fallback) => ({ today: 'Today', routines: 'Routines', progress: 'Progress', profile: 'Profile', settings: 'Settings', split: (routineById(ui.routineId) || {}).name || 'Split' }[prevScreen()] || fallback);
+
+/* ---------- body: BMI + body fat ---------- */
+function latestWeight() { const w = state.body.weights; return w.length ? w[w.length - 1] : null; }
+function bmiOf(kg, cm) { if (!kg || !cm) return null; return kg / Math.pow(cm / 100, 2); }
+function bmiClass(b) { return b < 18.5 ? 'Underweight' : b < 25 ? 'Healthy weight' : b < 30 ? 'Overweight' : 'Obesity'; } // WHO adult cut-offs
+function navyFat(sex, cm, waist, neck, hip) {
+  // U.S. Navy circumference method (Hodgdon & Beckett), all in cm
+  if (!cm || !waist || !neck) return null;
+  if (sex === 'male') { if (waist - neck <= 0) return null; return 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(cm)) - 450; }
+  if (sex === 'female') { if (!hip || waist + hip - neck <= 0) return null; return 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(cm)) - 450; }
+  return null;
+}
+function bodyFat(b) {
+  if (b.fatMode === 'manual') return b.fatManual != null ? { v: b.fatManual, est: false } : null;
+  const v = navyFat(b.sex, b.height, b.waist, b.neck, b.hip);
+  return v != null && v > 2 && v < 70 ? { v, est: true } : null;
 }
 function tab(screen) { ui.stack = []; ui.screen = screen; render(); window.scrollTo(0, 0); }
 
@@ -322,57 +426,90 @@ function restDoneAlert() {
    VIEWS
    ============================================================ */
 function tabsHtml() {
-  const t = [['today', 'Today', ICON.home], ['routines', 'Routines', ICON.list], ['progress', 'Progress', ICON.chart], ['settings', 'Settings', ICON.sliders]];
+  const t = [['today', 'Today', ICON.home], ['routines', 'Routines', ICON.list], ['progress', 'Progress', ICON.chart], ['profile', 'Profile', ICON.profile]];
   return `<nav class="tabs" aria-label="Main">${t.map(([s, l, i]) => `<button data-act="tab" data-s="${s}" ${ui.screen === s ? 'aria-current="page"' : ''}>${i}${l}</button>`).join('')}</nav>`;
 }
 const switchHtml = (on, act, label) => `<button class="switch" role="switch" aria-checked="${on}" aria-label="${esc(label)}" data-act="${act}"></button>`;
 const backHtml = (label) => `<button class="back" data-act="back">${ICON.back}${esc(label)}</button>`;
+const modeName = (m) => (m === 'cycle' ? 'Cycle' : 'Weekdays');
+
+function vName(edit) {
+  return `<main class="screen" style="min-height:100dvh;justify-content:center">
+    ${edit ? backHtml(backLabel('Profile')) : ''}
+    <header><h1 class="title">${edit ? 'Your name' : 'Welcome'}</h1><div class="muted" style="margin-top:6px">${edit ? 'Shown in your greeting on the home screen.' : 'What should we call you?'}</div></header>
+    <section><label class="label" for="firstname">First name</label>
+      <input id="firstname" class="text" maxlength="30" autocomplete="given-name" autocapitalize="words" enterkeyhint="done" data-input="nameDraft" value="${esc(ui.nameDraft)}"></section>
+    <section><button class="btn" data-act="saveName">${edit ? 'Save' : 'Continue'}</button>
+      ${edit ? '' : '<button class="btn-quiet" data-act="skipName">Skip for now</button>'}</section>
+  </main>`;
+}
 
 function vToday() {
+  if (!state.settings.onboarded) { ui.screen = 'welcome'; ui.nameDraft = ''; return vName(false); }
   const a = state.active;
+  const name = state.settings.name;
   const date = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-  let next = '';
+  let hero;
   if (a) {
-    next = `<section><div class="label">In progress</div><div style="font-size:22px;font-weight:600">${esc(a.name)}</div>
-      <div class="muted small">Started ${new Date(a.start).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
-      <button class="btn" style="margin-top:8px" data-act="resume">Resume workout</button></section>`;
+    hero = `<div class="label">In progress · started ${new Date(a.start).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
+      <div class="hero-day">${esc(a.name)}</div>
+      <button class="btn" data-act="resume">Resume workout</button>`;
   } else {
     const nd = nextDay();
-    const r = state.routine;
     if (!nd) {
-      next = `<section><div class="label">Your routine is empty</div><div class="muted">Add training days to get a next workout here.</div>
-        <button class="btn" style="margin-top:8px" data-act="newDay">Add a day</button></section>`;
-    } else if (!nd.day || nd.day.rest || !nd.day.ex.length) {
-      const after = r.mode === 'cycle' ? nextTrainingAfter(nd.index) : null;
-      next = `<section><div class="label">${r.mode === 'cycle' ? 'Next · Day ' + (nd.index + 1) + ' of ' + r.days.length : 'Today'}</div>
-        <div style="font-size:22px;font-weight:600">${nd.day && !nd.day.rest ? esc(nd.day.name) : 'Rest day'}</div>
-        <div class="muted small">${nd.day && !nd.day.rest ? 'No exercises in this day yet.' : 'Recovery is part of the plan.'}</div>
-        ${after ? `<button class="btn" style="margin-top:8px" data-act="skipTo" data-i="${after.index}">Skip to ${esc(after.day.name)}</button>` : ''}
-        <button class="btn-quiet" data-act="tab" data-s="routines">Choose another day</button></section>`;
+      hero = `<div class="label">No active split</div><div class="hero-day">Build your split</div>
+        <div class="muted small">Add the days you train and the app will line up the next one.</div>
+        <button class="btn" data-act="${state.routines.length ? 'tab' : 'newRoutine'}" data-s="routines">${state.routines.length ? 'Choose a split' : 'Create a split'}</button>`;
     } else {
-      next = `<section><div class="label">${r.mode === 'cycle' ? 'Next · Day ' + (nd.index + 1) + ' of ' + r.days.length : 'Today'}</div>
-        <div style="font-size:22px;font-weight:600">${esc(nd.day.name)}</div>
-        <div class="muted small">${nd.day.ex.length} exercises · ${esc(r.name)}</div>
-        <button class="btn" style="margin-top:8px" data-act="start" data-id="${nd.day.id}">Start workout</button>
-        <button class="btn-quiet" data-act="tab" data-s="routines">Choose another day</button></section>`;
+      const r = nd.r;
+      const where = r.mode === 'cycle' ? (nd.index >= 0 ? 'Day ' + (nd.index + 1) + ' of ' + r.days.length : '') : WEEKDAYS[todayIndex()];
+      const label = `<div class="label">${esc(r.name)}${where ? ' · ' + where : ''}</div>`;
+      if (!r.days.length) {
+        hero = `${label}<div class="hero-day">No days yet</div><div class="muted small">Add the days you train to this split.</div>
+          <button class="btn" data-act="openRoutine" data-id="${r.id}">Add days</button>`;
+      } else if (!nd.day || nd.day.rest || !nd.day.ex.length) {
+        const after = r.mode === 'cycle' ? nextTrainingAfter(r, nd.index) : null;
+        const isEmptyDay = nd.day && !nd.day.rest;
+        hero = `${label}<div class="hero-day">${isEmptyDay ? esc(nd.day.name) : 'Rest day'}</div>
+          <div class="muted small">${isEmptyDay ? 'No exercises in this day yet.' : 'Recovery is part of the plan.'}</div>
+          ${after ? `<button class="btn" data-act="skipTo" data-i="${after.index}">Skip to ${esc(after.day.name)}</button>` : `<button class="btn" data-act="openRoutine" data-id="${r.id}">Train another day</button>`}`;
+      } else {
+        hero = `${label}<div class="hero-day">${esc(nd.day.name)}</div>
+          <div class="muted small">${nd.day.ex.length} exercises · about ${typicalMinutes(nd.day)} min</div>
+          <button class="btn" data-act="start" data-id="${nd.day.id}">Start workout</button>
+          <button class="btn-quiet" data-act="openRoutine" data-id="${r.id}">Choose another day</button>`;
+      }
     }
   }
-  // this week, Monday first
-  const now = new Date(); const mon = startOfDay(now.getTime() - ((now.getDay() + 6) % 7) * DAY);
-  const trained = new Set(state.history.filter((w) => w.start >= mon).map((w) => Math.floor((startOfDay(w.start) - mon) / DAY)));
-  const todayI = (now.getDay() + 6) % 7;
-  const week = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((l, i) => `<div class="${i === todayI ? 'today' : ''}">${l}<span class="dot${trained.has(i) ? ' on' : i === todayI ? ' ring' : ''}"></span></div>`).join('');
-  const recent = state.history.slice(-3).reverse();
-  const recentHtml = recent.length ? recent.map((w) => {
+  // routines strip
+  const cards = state.routines.map((r) => `<button class="rcard${r.id === state.activeRoutineId ? ' on' : ''}" data-act="openRoutine" data-id="${r.id}">
+      <span class="n">${esc(r.name)}</span><span class="muted small">${r.days.length} day${r.days.length === 1 ? '' : 's'} · ${modeName(r.mode)}${r.id === state.activeRoutineId ? ' · <span class="pos">Active</span>' : ''}</span></button>`).join('')
+    + `<button class="rcard" data-act="newRoutine"><span class="n pos">+ New split</span><span class="muted small">Cycle or weekdays</span></button>`;
+  // repeat a workout
+  const recent = state.history.slice(-4).reverse();
+  const repeat = recent.length ? recent.map((w) => {
     const d = new Date(w.start); const old = Date.now() - w.start > 6 * DAY;
-    const when = old ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : d.toLocaleDateString('en-GB', { weekday: 'short' });
-    return `<div class="row"><span>${esc(w.name)}</span><span class="right">${when} · ${fmtDur(w.end - w.start)}</span></div>`;
-  }).join('') : '<div class="empty">No workouts yet.</div>';
-  return `<main class="screen tabbed">
-    <header><div class="muted small">${date}</div><h1 class="title">Today</h1></header>
-    ${next}
-    <section><div class="label">This week</div><div class="week" aria-label="Days trained this week">${week}</div></section>
-    <section class="list"><div class="label">Recent</div>${recentHtml}</section>
+    const when = old ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    return `<button class="row" data-act="repeat" data-id="${esc(w.id)}" aria-label="Repeat ${esc(w.name)} from ${when}"><span><span class="row-main" style="display:block">${esc(w.name)}</span><span class="sub">${when} · ${fmtDur(w.end - w.start)}</span></span><span class="pos small">Repeat</span></button>`;
+  }).join('') : '<div class="empty">Your finished workouts show up here.</div>';
+  // this week
+  const now = new Date(); const mon = startOfDay(now.getTime() - todayIndex() * DAY);
+  const trained = new Set(state.history.filter((w) => w.start >= mon).map((w) => Math.floor((startOfDay(w.start) - mon) / DAY)));
+  const ti = todayIndex();
+  const week = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((l, i) => `<div class="${i === ti ? 'today' : ''}">${l}<span class="dot${trained.has(i) ? ' on' : i === ti ? ' ring' : ''}"></span></div>`).join('');
+  return `<main class="home">
+    <div class="home-top">
+      <header class="home-head">
+        <div class="home-bar"><button class="avatar" data-act="tab" data-s="profile" aria-label="Your profile">${name ? esc(name.charAt(0).toUpperCase()) : ICON.user}</button><span class="muted small">${date}</span></div>
+        <h1 class="greet" id="greeting">${esc(greeting())}</h1>
+      </header>
+      <div class="hero" id="hero">${hero}</div>
+    </div>
+    <div class="below">
+      <section><div class="label">Routines</div><div class="hscroll">${cards}</div></section>
+      <section class="list"><div class="label">Repeat a workout</div>${repeat}</section>
+      <section><div class="label">This week</div><div class="week" aria-label="Days trained this week">${week}</div></section>
+    </div>
   </main>${tabsHtml()}`;
 }
 
@@ -426,7 +563,7 @@ function summarize(a) {
     const cur = bestSet(good);
     let prior = null;
     state.history.forEach((w) => w.ex.forEach((x) => { if (x.exId === e.exId) x.sets.forEach((s) => { if (!prior || e1(s) > e1(prior)) prior = s; }); }));
-    if (prior && e1(cur) > e1(prior) + 0.01 && cur.kg >= 0) {
+    if (prior && e1(cur) > e1(prior) + 0.01) {
       const diff = cur.kg > 0 ? 'e1RM +' + fmtNum(Math.round((e1(cur) - e1(prior)) * 10) / 10) + ' kg' : '+' + (cur.reps - prior.reps) + ' reps';
       prs.push({ name: exName(e.exId), set: cur, diff });
     }
@@ -438,16 +575,19 @@ function vFinish() {
   const a = state.active;
   if (!a) { ui.screen = 'today'; return vToday(); }
   const s = summarize(a); const o = ui.finish;
-  const r = state.routine; const di = r.days.findIndex((d) => d.id === a.dayId);
-  let nextTxt = 'Follows your weekdays';
-  if (r.mode === 'cycle' && di >= 0) {
-    const nd = r.days[(di + 1) % r.days.length];
-    const t = nextTrainingAfter(di);
-    nextTxt = nd.rest ? 'Rest' + (t ? ', then ' + t.day.name : '') : nd.name;
+  const f = findDay(a.dayId);
+  let nextTxt = '', where = '';
+  if (f) {
+    where = esc(f.r.name) + (f.r.mode === 'cycle' ? ' · Day ' + (f.i + 1) : '');
+    if (f.r.mode === 'cycle') {
+      const nd = f.r.days[(f.i + 1) % f.r.days.length];
+      const t = nextTrainingAfter(f.r, f.i);
+      nextTxt = nd.rest ? 'Rest' + (t ? ', then ' + t.day.name : '') : nd.name;
+    } else nextTxt = 'Follows your weekdays';
   }
   const prs = s.prs.length ? `<section class="list"><div class="label">Personal records</div>${s.prs.map((p) => `<div class="row"><span>${esc(p.name)}</span><span>${fmtSet(p.set)} <span class="pos small">${esc(p.diff)}</span></span></div>`).join('')}</section>` : '';
   return `<main class="screen">
-    <header><div class="muted small">${esc(r.name)}${di >= 0 && r.mode === 'cycle' ? ' · Day ' + (di + 1) : ''}</div><h1 class="title">${esc(a.name)}</h1></header>
+    <header><div class="muted small">${where || 'Workout'}</div><h1 class="title">${esc(a.name)}</h1></header>
     <section><div class="stats">
       <div><div class="muted small">Time</div><div class="stat-v">${fmtDur(Date.now() - a.start)}</div></div>
       <div><div class="muted small">Sets</div><div class="stat-v">${s.sets}</div></div>
@@ -455,9 +595,9 @@ function vFinish() {
       ${s.unticked ? `<div class="muted small">${s.unticked} set${s.unticked > 1 ? 's' : ''} with numbers but not ticked won't be saved.</div>` : ''}</section>
     ${prs}
     <section class="list"><div class="label">On save</div>
-      ${a.changed && di >= 0 ? `<div class="row"><span>Save exercise changes to routine</span>${switchHtml(o.updateRoutine, 'finUpdate', 'Save exercise changes to routine')}</div>` : ''}
+      ${a.changed && f ? `<div class="row"><span>Save exercise changes to ${esc(f.d.name)}</span>${switchHtml(o.updateRoutine, 'finUpdate', 'Save exercise changes to routine')}</div>` : ''}
       <div class="row"><div><div>Save to Apple Health</div><div class="sub">Works in the iPhone app</div></div>${switchHtml(o.health, 'finHealth', 'Save to Apple Health')}</div>
-      <div class="row"><span>Next in split</span><span class="right">${esc(nextTxt)}</span></div></section>
+      ${nextTxt ? `<div class="row"><span>Next in split</span><span class="right">${esc(nextTxt)}</span></div>` : ''}</section>
     <section>
       <button class="btn" data-act="saveWorkout" ${s.sets ? '' : 'disabled'}>${s.sets ? 'Save workout' : 'Tick at least one set to save'}</button>
       <button class="btn-quiet" data-act="back">Back to workout</button>
@@ -467,7 +607,7 @@ function vFinish() {
 
 function vRest() {
   const R = state.settings.rest;
-  const src = state.active ? state.active.ex.map((e) => e.exId) : ((nextDay() || {}).day || { ex: [] }).ex.map((e) => e.exId);
+  const src = state.active ? state.active.ex.map((e) => e.exId) : (((nextDay() || {}).day) || { ex: [] }).ex.map((e) => e.exId);
   const ids = [...new Set(src)];
   const per = ids.length ? ids.map((id) => `<button class="row" data-act="cycleRest" data-id="${esc(id)}"><span>${esc(exName(id))}</span><span class="right">${R.per[id] != null ? fmtTime(R.per[id]) : 'Default'}</span></button>`).join('')
     : '<div class="empty">Add exercises to a day to set custom rest times.</div>';
@@ -486,37 +626,61 @@ function vRest() {
   </main>`;
 }
 
+/* Routines tab: all splits */
 function vRoutines() {
-  const r = state.routine;
-  const cycle = r.mode === 'cycle';
-  let rows = '';
-  if (!r.days.length) rows = '<div class="empty">No days yet. Tap + to add your first day.</div>';
-  else if (cycle) {
-    clampNext();
-    rows = r.days.map((d, i) => {
-      const next = i === r.next && !state.active;
-      const right = next ? '<span class="pos" style="font-weight:600">Next</span>' : d.rest ? 'Rest' : d.ex.length + ' exercises';
-      return `<button class="row" data-act="openDay" data-id="${d.id}"><span style="display:flex;gap:16px"><span class="muted" style="width:24px">${i + 1}</span><span class="row-main"${next ? ' style="font-weight:600"' : ''}>${esc(d.name)}</span></span><span class="right">${right}</span></button>`;
-    }).join('');
-  } else {
-    const todayI = (new Date().getDay() + 6) % 7;
-    const opts = (sel) => `<option value="">Rest</option>` + r.days.filter((d) => !d.rest).map((d) => `<option value="${d.id}"${d.id === sel ? ' selected' : ''}>${esc(d.name)}</option>`).join('');
-    rows = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((n, i) =>
-      `<div class="row"><label for="wd${i}"${i === todayI ? ' style="font-weight:600"' : ''}>${n}${i === todayI ? ' <span class="pos small">Today</span>' : ''}</label><select id="wd${i}" data-change="weekday" data-w="${i}">${opts(r.week[i])}</select></div>`).join('');
-  }
+  const rows = state.routines.length ? state.routines.map((r) => {
+    const on = r.id === state.activeRoutineId;
+    return `<button class="row" data-act="openRoutine" data-id="${r.id}"><span><span class="row-main" style="display:block;${on ? 'font-weight:600' : ''}">${esc(r.name)}</span><span class="sub">${r.days.length} day${r.days.length === 1 ? '' : 's'} · ${modeName(r.mode)}</span></span><span class="right">${on ? '<span class="pos" style="font-weight:600">Active</span>' : ''}</span></button>`;
+  }).join('') : '<div class="empty">No splits yet. Tap + to create one.</div>';
   return `<main class="screen tabbed">
-    <header class="headrow"><div><div class="muted small">Routine</div><h1 class="title">${esc(r.name)}</h1></div>
-      <button class="iconbtn" data-act="newDay" aria-label="Add day">${ICON.plus}</button></header>
-    <section><div class="seg"><button data-act="mode" data-m="cycle" aria-pressed="${cycle}">Cycle</button><button data-act="mode" data-m="week" aria-pressed="${!cycle}">Weekdays</button></div>
-      <div class="muted small">${cycle ? 'Days run in order. Miss one and the split waits for you.' : 'Pick a day for each weekday. Today\'s pick shows on the Today tab.'}</div></section>
-    <section class="list">${rows}</section>
+    <header class="headrow"><h1 class="title">Routines</h1><button class="iconbtn" data-act="newRoutine" aria-label="New split">${ICON.plus}</button></header>
+    <section class="list"><div class="label">Your splits</div>${rows}</section>
   </main>${tabsHtml()}`;
 }
 
+/* One split: name, active, cycle/weekdays, days */
+function vSplit() {
+  const r = routineById(ui.routineId);
+  if (!r) { ui.screen = 'routines'; return vRoutines(); }
+  const cycle = r.mode === 'cycle';
+  const isActive = r.id === state.activeRoutineId;
+  clampNext(r);
+  const days = r.days.length ? r.days.map((d, i) => {
+    const next = cycle && isActive && i === r.next && !state.active;
+    const right = next ? '<span class="pos" style="font-weight:600">Next</span>' : d.rest ? 'Rest' : d.ex.length + ' exercises';
+    return `<button class="row" data-act="openDay" data-id="${d.id}"><span style="display:flex;gap:16px">${cycle ? `<span class="muted" style="width:24px">${i + 1}</span>` : ''}<span class="row-main"${next ? ' style="font-weight:600"' : ''}>${esc(d.name)}</span></span><span class="right">${right}</span></button>`;
+  }).join('') : '<div class="empty">No days yet.</div>';
+  let week = '';
+  if (!cycle) {
+    const ti = todayIndex();
+    const opts = (sel) => `<option value="">Rest</option>` + r.days.filter((d) => !d.rest).map((d) => `<option value="${d.id}"${d.id === sel ? ' selected' : ''}>${esc(d.name)}</option>`).join('');
+    week = `<section class="list"><div class="label">Week plan</div>${WEEKDAYS.map((n, i) =>
+      `<div class="row"><label for="wd${i}"${i === ti ? ' style="font-weight:600"' : ''}>${n}${i === ti ? ' <span class="pos small">Today</span>' : ''}</label><select id="wd${i}" data-change="weekday" data-w="${i}">${opts(r.week[i])}</select></div>`).join('')}</section>`;
+  }
+  const creating = ui.creatingId === r.id;
+  const top = creating
+    ? `<header class="headrow" style="align-items:center"><button class="link" style="font-size:15px;min-height:44px" data-act="cancelSplit">Cancel</button><span class="label">New split</span><button class="link" style="font-size:15px;font-weight:600;min-height:44px" data-act="saveSplit">Save</button></header>`
+    : backHtml(backLabel('Routines'));
+  const activeRow = creating
+    ? `<section class="list"><div class="row"><span>Make this my active split</span>${switchHtml(ui.makeActive, 'toggleMakeActive', 'Make this my active split')}</div></section>`
+    : `<section>${isActive ? '<div class="row" style="border:0"><span>This is your active split</span><span class="pos small" style="font-weight:600">Active</span></div>' : `<button class="btn" data-act="setActive" data-id="${r.id}">Use this split</button>`}</section>`;
+  return `<main class="screen">
+    ${top}
+    <section><label class="label" for="rname">Split name</label><input id="rname" class="text" maxlength="40" data-input="routineName" data-change="routineNameDone" value="${esc(r.name)}"></section>
+    ${activeRow}
+    <section><div class="label">Schedule</div>
+      <div class="seg"><button data-act="mode" data-m="cycle" aria-pressed="${cycle}">Cycle</button><button data-act="mode" data-m="week" aria-pressed="${!cycle}">Weekdays</button></div>
+      <div class="muted small">${cycle ? 'Days run in order. Miss one and the split waits for you.' : 'Pick a day for each weekday. Today\'s pick shows on the home screen.'}</div></section>
+    ${week}
+    <section class="list"><div class="headrow"><span class="label">Days</span><button class="link" style="min-height:32px" data-act="newDay">+ Add day</button></div>${days}</section>
+    <section>${creating ? '<button class="btn" data-act="saveSplit">Save split</button>' : '<button class="btn-quiet danger" data-act="askDeleteRoutine">Delete split</button>'}</section>
+  </main>`;
+}
+
 function vDay() {
-  const d = dayById(ui.dayId);
-  if (!d) { ui.screen = 'routines'; return vRoutines(); }
-  const i = state.routine.days.indexOf(d);
+  const f = findDay(ui.dayId);
+  if (!f) { ui.screen = 'split'; return vSplit(); }
+  const { r, d, i } = f;
   const exRows = d.ex.length ? d.ex.map((e, k) => `<div class="row"><span>${esc(exName(e.exId))}</span><span class="stepper">
       <button data-act="setCount" data-k="${k}" data-d="-1" aria-label="Fewer sets">−</button><span>${e.sets} set${e.sets > 1 ? 's' : ''}</span>
       <button data-act="setCount" data-k="${k}" data-d="1" aria-label="More sets">+</button>
@@ -524,13 +688,13 @@ function vDay() {
     : '<div class="empty">No exercises yet.</div>';
   const canStart = !d.rest && d.ex.length;
   return `<main class="screen">
-    ${backHtml('Routines')}
-    <section><label class="label" for="dayname">Day ${i + 1} name</label><input id="dayname" class="text" maxlength="40" data-input="dayName" data-change="dayNameDone" value="${esc(d.name)}"></section>
+    ${backHtml(r.name)}
+    <section><label class="label" for="dayname">${r.mode === 'cycle' ? 'Day ' + (i + 1) + ' name' : 'Day name'}</label><input id="dayname" class="text" maxlength="40" data-input="dayName" data-change="dayNameDone" value="${esc(d.name)}"></section>
     <section class="list"><div class="row"><span>Rest day</span>${switchHtml(d.rest, 'toggleRestDay', 'Rest day')}</div></section>
     ${d.rest ? '' : `<section class="list"><div class="label">Exercises</div>${exRows}<button class="link" style="align-self:flex-start" data-act="pickForDay">+ Add exercise</button></section>`}
     <section>
       <button class="btn" data-act="start" data-id="${d.id}" ${canStart ? '' : 'disabled'}>${canStart ? 'Start this day' : d.rest ? 'Rest day' : 'Add exercises to start'}</button>
-      ${state.routine.mode === 'cycle' ? `<button class="btn-quiet" data-act="setNext" data-i="${i}">${state.routine.next === i ? 'This is the next day' : 'Make this the next day'}</button>` : ''}
+      ${r.mode === 'cycle' ? `<button class="btn-quiet" data-act="setNext" data-i="${i}">${r.next === i ? 'This is the next day' : 'Make this the next day'}</button>` : ''}
       <button class="btn-quiet danger" data-act="askDeleteDay">Delete day</button>
     </section></main>`;
 }
@@ -539,20 +703,28 @@ function pickListHtml() {
   const q = ui.q.trim().toLowerCase();
   const target = ui.pickFor === 'workout' ? (state.active ? state.active.ex : []) : ((dayById(ui.dayId) || { ex: [] }).ex);
   const added = new Set(target.map((e) => e.exId));
-  const hits = state.lib.filter((x) => !q || x.name.toLowerCase().includes(q) || x.muscle.toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
+  const groupOf = (x) => (MUSCLES.includes(x.muscle) ? x.muscle : 'Other');
+  const hits = state.lib.filter((x) => (ui.muscle === 'All' || groupOf(x) === ui.muscle) && (!q || x.name.toLowerCase().includes(q) || groupOf(x).toLowerCase().includes(q)));
   const exact = state.lib.some((x) => x.name.toLowerCase() === q);
-  let h = q && !exact ? `<button class="row" data-act="createEx"><span class="pos">Create “${esc(ui.q.trim().slice(0, 40))}”</span><span class="right">Custom</span></button>` : '';
-  h += hits.map((x) => added.has(x.id)
-    ? `<div class="row"><span class="muted">${esc(x.name)}</span><span class="right">Added</span></div>`
-    : `<button class="row" data-act="pick" data-id="${esc(x.id)}"><span class="row-main">${esc(x.name)}</span><span class="right">${esc(x.muscle)}</span></button>`).join('');
+  const newGroup = ui.muscle === 'All' ? 'Other' : ui.muscle;
+  let h = q && !exact ? `<section class="list"><button class="row" data-act="createEx"><span class="pos">Create “${esc(ui.q.trim().slice(0, 40))}”</span><span class="right">in ${esc(newGroup)}</span></button></section>` : '';
+  MUSCLES.forEach((m) => {
+    const xs = hits.filter((x) => groupOf(x) === m).sort((a, b) => a.name.localeCompare(b.name));
+    if (!xs.length) return;
+    h += `<section class="list" aria-label="${esc(m)}"><div class="label">${esc(m)}</div>` + xs.map((x) => added.has(x.id)
+      ? `<div class="row"><span class="muted">${esc(x.name)}</span><span class="right">Added</span></div>`
+      : `<button class="row" data-act="pick" data-id="${esc(x.id)}"><span class="row-main">${esc(x.name)}</span>${x.custom ? '<span class="right">Custom</span>' : ''}</button>`).join('') + '</section>';
+  });
   if (!h) h = '<div class="empty">No exercises found.</div>';
   return h;
 }
 function vPicker() {
+  const chips = ['All', ...MUSCLES].map((m) => `<button class="chip${ui.muscle === m ? ' on' : ''}" data-act="muscle" data-m="${esc(m)}" aria-pressed="${ui.muscle === m}">${esc(m)}</button>`).join('');
   return `<main class="screen">${backHtml('Back')}
     <header><h1 class="title">Add exercise</h1></header>
-    <section><label class="label" for="search">Search</label><input id="search" class="text" type="search" autocomplete="off" maxlength="40" placeholder="Name or muscle" data-input="search" value="${esc(ui.q)}"></section>
-    <section class="list" id="picklist">${pickListHtml()}</section></main>`;
+    <section><label class="label" for="search">Search</label><input id="search" class="text" type="search" autocomplete="off" maxlength="40" placeholder="Exercise name" data-input="search" value="${esc(ui.q)}">
+      <div class="hscroll" style="padding-top:4px" role="group" aria-label="Muscle group">${chips}</div></section>
+    <div id="picklist" style="display:flex;flex-direction:column;gap:32px">${pickListHtml()}</div></main>`;
 }
 
 function chartSvg(values, label) {
@@ -599,6 +771,7 @@ function vProgress() {
     <header class="headrow"><h1 class="title">Progress</h1>
       <div class="seg">${[[30, 'Month'], [90, '3 mo'], [365, 'Year']].map(([v, l]) => `<button data-act="period" data-p="${v}" aria-pressed="${p === v}">${l}</button>`).join('')}</div></header>
     <section><div class="label">Estimated strength</div>${head}</section>
+    ${bodySectionHtml()}
     <section class="list"><div class="label">Lifts</div>${rows}</section>
   </main>${tabsHtml()}`;
 }
@@ -617,9 +790,105 @@ function vLift() {
     <section class="list"><div class="label">Recent sessions</div>${recent}</section></main>`;
 }
 
+/* Body: questions + auto BMI + body fat */
+function bodySectionHtml() {
+  const b = state.body; const w = latestWeight();
+  if (!w && !b.height && !b.sex) {
+    return `<section class="list"><div class="label">Body</div>
+      <button class="row" data-act="openBody"><span><span class="row-main" style="display:block">Add weight, height and sex</span><span class="sub">Get your BMI and body fat worked out for you</span></span><span class="pos small">Add</span></button></section>`;
+  }
+  const bmi = w ? bmiOf(w.kg, b.height) : null; const bf = bodyFat(b);
+  const first = b.weights[0];
+  const delta = w && first && b.weights.length > 1 ? Math.round((w.kg - first.kg) * 10) / 10 : null;
+  return `<section class="list"><div class="headrow"><span class="label">Body</span><button class="link" style="min-height:32px" data-act="openBody">Update</button></div>
+    <div class="row"><span>Weight</span><span class="right">${w ? fmtNum(w.kg) + ' kg' : '—'}${delta !== null && delta !== 0 ? ` · ${delta > 0 ? '+' : '−'}${fmtNum(Math.abs(delta))} kg since ${new Date(first.t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}` : ''}</span></div>
+    <div class="row"><span>BMI</span><span class="right">${bmi ? fmtNum(Math.round(bmi * 10) / 10) + ' · ' + bmiClass(bmi) : 'Add height and weight'}</span></div>
+    <div class="row"><span>Body fat</span><span class="right">${bf ? (bf.est ? '≈ ' : '') + fmtNum(Math.round(bf.v * 10) / 10) + ' %' + (bf.est ? ' (estimate)' : '') : 'Not set'}</span></div></section>`;
+}
+function bodyResultsHtml() {
+  const d = ui.body;
+  const kg = parseNum(d.weight), cm = parseNum(d.height);
+  const bmi = bmiOf(kg, cm);
+  let fat = null;
+  if (d.fatMode === 'manual') fat = parseNum(d.fatManual);
+  else fat = navyFat(d.sex, cm, parseNum(d.waist), parseNum(d.neck), parseNum(d.hip));
+  const fatTxt = fat != null && fat > 2 && fat < 70 ? (d.fatMode === 'navy' ? '≈ ' : '') + fmtNum(Math.round(fat * 10) / 10) + ' %'
+    : d.fatMode === 'navy' ? (d.sex ? 'Fill in the measurements' : 'Choose male or female to estimate') : 'Enter your %';
+  return `<div class="row"><span>BMI</span><span class="right" id="bmiOut">${bmi ? fmtNum(Math.round(bmi * 10) / 10) + ' · ' + bmiClass(bmi) : 'Needs height and weight'}</span></div>
+    <div class="row"><span>Body fat</span><span class="right" id="fatOut">${fatTxt}</span></div>`;
+}
+const numField = (id, label, unit, val, hint) => `<div class="row"><label for="${id}">${label}${hint ? `<span class="sub" style="display:block">${hint}</span>` : ''}</label>
+  <span style="display:flex;align-items:center;gap:8px"><input id="${id}" class="num" style="width:96px;text-align:right" inputmode="decimal" autocomplete="off" maxlength="6" data-input="bodyField" data-f="${id}" value="${esc(val ?? '')}"><span class="muted small" style="width:22px">${unit}</span></span></div>`;
+function vBody() {
+  const d = ui.body;
+  const hist = state.body.weights.slice(-8).reverse().map((w) => `<div class="row"><span>${new Date(w.t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span><span class="right">${fmtNum(w.kg)} kg</span></div>`).join('');
+  return `<main class="screen">${backHtml(backLabel('Progress'))}
+    <header><h1 class="title">Body</h1><div class="muted small" style="margin-top:6px">Used for BMI and body fat. Stored only on this device.</div></header>
+    <section><div class="label">Sex</div>
+      <div class="seg">${[['male', 'Male'], ['female', 'Female'], ['', 'Not set']].map(([v, l]) => `<button data-act="bodySex" data-v="${v}" aria-pressed="${(d.sex || '') === v}">${l}</button>`).join('')}</div></section>
+    <section class="list"><div class="label">Measurements</div>
+      ${numField('height', 'Height', 'cm', d.height)}
+      ${numField('weight', 'Weight today', 'kg', d.weight)}</section>
+    <section class="list"><div class="label">Body fat</div>
+      <div class="seg" style="margin-bottom:8px"><button data-act="fatMode" data-m="navy" aria-pressed="${d.fatMode === 'navy'}">Estimate it</button><button data-act="fatMode" data-m="manual" aria-pressed="${d.fatMode === 'manual'}">I know it</button></div>
+      ${d.fatMode === 'manual' ? numField('fatManual', 'Body fat', '%', d.fatManual, 'From a scan or caliper test')
+        : numField('waist', 'Waist', 'cm', d.waist, 'At the belly button') + numField('neck', 'Neck', 'cm', d.neck, 'Just below the Adam’s apple') + (d.sex === 'female' ? numField('hip', 'Hips', 'cm', d.hip, 'At the widest point') : '')}</section>
+    <section class="list"><div class="label">Results</div><div id="bodyResults">${bodyResultsHtml()}</div>
+      <div class="muted small" style="padding-top:8px">BMI doesn't tell muscle from fat, so it can read high if you lift. The estimate uses the U.S. Navy tape-measure method.</div></section>
+    <section><button class="btn" data-act="saveBody">Save</button></section>
+    ${hist ? `<section class="list"><div class="label">Weight history</div>${chartSvg(state.body.weights.slice(-20).map((w) => w.kg), 'Weight trend')}${hist}</section>` : ''}
+  </main>`;
+}
+
+/* Profile: all your data in one place, settings behind the gear */
+function vProfile() {
+  const s = state.settings; const H = state.history;
+  const now = new Date(); const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  const hours = Math.round(H.reduce((t, w) => t + (w.end - w.start), 0) / 3600000);
+  // activity heatmap, 12 weeks, Monday first
+  const thisMon = startOfDay(Date.now() - todayIndex() * DAY); const from = thisMon - 11 * 7 * DAY;
+  const days = new Set(H.filter((w) => w.start >= from).map((w) => Math.round((startOfDay(w.start) - from) / DAY)));
+  const todayN = Math.round((startOfDay(Date.now()) - from) / DAY);
+  let cells = '';
+  for (let n = 0; n < 84; n++) cells += `<span class="hm${days.has(n) ? ' on' : ''}${n === todayN ? ' now' : ''}${n > todayN ? ' fut' : ''}"></span>`;
+  const list = (ui.showAll ? H.slice().reverse() : H.slice(-8).reverse()).map((w) => `<button class="row" data-act="openWorkout" data-id="${esc(w.id)}"><span><span class="row-main" style="display:block">${esc(w.name)}</span><span class="sub">${new Date(w.start).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span></span><span class="right">${fmtDur(w.end - w.start)} · ${w.ex.reduce((t, e) => t + e.sets.length, 0)} sets</span></button>`).join('') || '<div class="empty">No workouts yet.</div>';
+  const w = latestWeight(); const bmi = w ? bmiOf(w.kg, state.body.height) : null;
+  return `<main class="screen tabbed">
+    <header class="headrow" style="align-items:center"><h1 class="title">Profile</h1><button class="iconbtn" style="color:var(--muted)" data-act="openSettings" aria-label="Settings">${ICON.gear}</button></header>
+    <section style="flex-direction:row;align-items:center;gap:14px">
+      <span class="avatar" style="width:56px;height:56px;font-size:22px" aria-hidden="true">${s.name ? esc(s.name.charAt(0).toUpperCase()) : ICON.user}</span>
+      <div><button style="font-size:20px;font-weight:600" data-act="editName">${s.name ? esc(s.name) : 'Add your name'}</button><div class="muted small">${esc((activeRoutine() || { name: 'No active split' }).name)}</div></div></section>
+    <section><div class="stats">
+      <div><div class="muted small">Workouts</div><div class="stat-v">${H.length}</div></div>
+      <div><div class="muted small">This month</div><div class="stat-v">${H.filter((x) => x.start >= monthStart).length}</div></div>
+      <div><div class="muted small">Hours</div><div class="stat-v">${hours}</div></div></div></section>
+    <section><div class="label">Activity · last 12 weeks</div><div class="heat" aria-label="Training days in the last 12 weeks">${cells}</div></section>
+    <section class="list"><div class="label">Body</div>
+      <button class="row" data-act="openBody"><span class="row-main">Weight, height, BMI, body fat</span><span class="right">${w ? fmtNum(w.kg) + ' kg' + (bmi ? ' · BMI ' + fmtNum(Math.round(bmi * 10) / 10) : '') : 'Add'}</span></button></section>
+    <section class="list"><div class="label">Workouts</div>${list}
+      ${H.length > 8 ? `<button class="link" style="align-self:flex-start" data-act="toggleAll">${ui.showAll ? 'Show fewer' : 'Show all ' + H.length}</button>` : ''}</section>
+    <section class="list"><div class="label">Your data</div>
+      <button class="row" data-act="exportCsv"><span class="row-main">Export all workouts</span><span class="right">CSV</span></button>
+      <button class="row" data-act="importClick"><span class="row-main">Import from Hevy or Strong</span><span class="right">CSV</span></button></section>
+  </main>${tabsHtml()}`;
+}
+function vWorkoutDetail() {
+  const w = state.history.find((x) => x.id === ui.workoutId);
+  if (!w) { ui.screen = 'profile'; return vProfile(); }
+  const vol = w.ex.reduce((t, e) => t + e.sets.reduce((u, s) => u + s.kg * s.reps, 0), 0);
+  return `<main class="screen">${backHtml('Profile')}
+    <header><div class="muted small">${new Date(w.start).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div><h1 class="title">${esc(w.name)}</h1></header>
+    <section><div class="stats">
+      <div><div class="muted small">Time</div><div class="stat-v">${fmtDur(w.end - w.start)}</div></div>
+      <div><div class="muted small">Sets</div><div class="stat-v">${w.ex.reduce((t, e) => t + e.sets.length, 0)}</div></div>
+      <div><div class="muted small">Volume</div><div class="stat-v">${fmtNum(Math.round(vol))} kg</div></div></div></section>
+    <section class="list"><div class="label">Exercises</div>${w.ex.map((e) => `<div class="row" style="align-items:flex-start;padding:10px 0"><span>${esc(exName(e.exId))}</span><span class="right" style="flex:1;max-width:60%">${e.sets.map(fmtSet).join('<br>')}</span></div>`).join('')}</section>
+    <section><button class="btn" data-act="repeat" data-id="${esc(w.id)}">Repeat this workout</button>
+      <button class="btn-quiet danger" data-act="askDeleteWorkout">Delete workout</button></section></main>`;
+}
 function vSettings() {
   const s = state.settings;
-  return `<main class="screen tabbed">
+  return `<main class="screen">${backHtml('Profile')}
     <h1 class="title">Settings</h1>
     <section class="list"><div class="label">Units</div>
       <div class="row"><span>Weight</span><span class="right">kg</span></div>
@@ -627,13 +896,11 @@ function vSettings() {
       <div class="row"><span>Week starts</span><span class="right">Monday</span></div></section>
     <section class="list"><div class="label">Training</div>
       <button class="row" data-act="openRest"><span class="row-main">Rest timer</span><span class="right">${s.rest.on ? fmtTime(s.rest.secs) : 'Off'}</span></button>
-      <div class="row"><div><div>Apple Health</div><div class="sub">Works in the iPhone app</div></div>${switchHtml(s.health, 'toggleHealth', 'Apple Health')}</div>
-      <button class="row" data-act="importClick"><span class="row-main">Import from Hevy or Strong</span><span class="right">CSV</span></button></section>
-    <section class="list"><div class="label">Your data</div>
-      <button class="row" data-act="exportCsv"><span class="row-main">Export all data</span><span class="right">CSV</span></button>
+      <div class="row"><div><div>Apple Health</div><div class="sub">Works in the iPhone app</div></div>${switchHtml(s.health, 'toggleHealth', 'Apple Health')}</div></section>
+    <section class="list"><div class="label">Privacy</div>
       <button class="row" data-act="openPrivacy"><span class="row-main">Privacy choices</span></button>
       <button class="row danger" data-act="askDeleteAll">Delete all data</button></section>
-  </main>${tabsHtml()}`;
+  </main>`;
 }
 function vPrivacy() {
   return `<main class="screen">${backHtml('Settings')}
@@ -644,7 +911,7 @@ function vPrivacy() {
     <section><button class="btn-quiet" data-act="askDemo">Load demo data</button></section></main>`;
 }
 
-const VIEWS = { today: vToday, workout: vWorkout, finish: vFinish, rest: vRest, routines: vRoutines, day: vDay, picker: vPicker, progress: vProgress, lift: vLift, settings: vSettings, privacy: vPrivacy };
+const VIEWS = { body: vBody, profile: vProfile, workoutDetail: vWorkoutDetail, welcome: () => vName(false), name: () => vName(true), today: vToday, workout: vWorkout, finish: vFinish, rest: vRest, routines: vRoutines, split: vSplit, day: vDay, picker: vPicker, progress: vProgress, lift: vLift, settings: vSettings, privacy: vPrivacy };
 function render() {
   $app.innerHTML = (VIEWS[ui.screen] || vToday)();
   updateRestBar();
@@ -653,14 +920,23 @@ function render() {
 /* ============================================================
    THE BRAIN: actions (what happens when X happens)
    ============================================================ */
-function startWorkout(dayId) {
+function beginWorkout(w) {
   if (state.active) { toast('Finish or discard your current workout first'); ui.stack = []; ui.screen = 'workout'; render(); return; }
+  state.active = { id: uid(), restEnd: null, restDur: 0, changed: false, start: Date.now(), ...w };
+  save(true); ui.stack = []; ui.screen = 'workout'; render(); window.scrollTo(0, 0);
+}
+function startWorkout(dayId) {
   const d = dayById(dayId);
   if (!d || d.rest || !d.ex.length) { toast('This day has no exercises'); return; }
   // Copy (snapshot) the plan so later routine edits never change this workout
-  state.active = { id: uid(), dayId: d.id, name: d.name, start: Date.now(), restEnd: null, restDur: 0, changed: false,
-    ex: d.ex.map((e) => ({ exId: e.exId, min: e.min, max: e.max, sets: Array.from({ length: Math.max(1, e.sets) }, () => ({ kg: '', reps: '', done: false })) })) };
-  save(true); ui.stack = []; ui.screen = 'workout'; render(); window.scrollTo(0, 0);
+  beginWorkout({ dayId: d.id, name: d.name,
+    ex: d.ex.map((e) => ({ exId: e.exId, min: e.min, max: e.max, sets: Array.from({ length: Math.max(1, e.sets) }, () => ({ kg: '', reps: '', done: false })) })) });
+}
+function repeatWorkout(histId) {
+  const w = state.history.find((x) => x.id === histId); if (!w) return;
+  const d = dayById(w.dayId);
+  beginWorkout({ dayId: d ? d.id : null, name: w.name,
+    ex: w.ex.map((e) => { const p = d && d.ex.find((x) => x.exId === e.exId); return { exId: e.exId, min: p ? p.min : 8, max: p ? p.max : 12, sets: e.sets.map(() => ({ kg: '', reps: '', done: false })) }; }) });
 }
 function toggleSet(ei, si) {
   const a = state.active; const e = a && a.ex[ei]; const s = e && e.sets[si];
@@ -697,11 +973,11 @@ function saveWorkout() {
   const ex = a.ex.map((e) => ({ exId: e.exId, sets: e.sets.filter((s) => s.done).map((s) => ({ kg: parseNum(s.kg), reps: parseNum(s.reps) })).filter((s) => s.kg !== null && s.reps !== null && s.reps >= 1) })).filter((e) => e.sets.length);
   if (!ex.length) { toast('Tick at least one set first'); return; }
   state.history.push({ id: a.id, dayId: a.dayId, name: a.name, start: a.start, end: Date.now(), ex });
-  const r = state.routine; const di = r.days.findIndex((d) => d.id === a.dayId);
-  if (di >= 0 && a.changed && ui.finish.updateRoutine) {
-    r.days[di].ex = a.ex.filter((e) => e.sets.length).map((e) => ({ exId: e.exId, sets: e.sets.length, min: e.min || 8, max: e.max || 12 }));
+  const f = findDay(a.dayId);
+  if (f) {
+    if (a.changed && ui.finish.updateRoutine) f.d.ex = a.ex.filter((e) => e.sets.length).map((e) => ({ exId: e.exId, sets: e.sets.length, min: e.min || 8, max: e.max || 12 }));
+    if (f.r.mode === 'cycle') f.r.next = (f.i + 1) % f.r.days.length; // move that split's pointer
   }
-  if (r.mode === 'cycle' && di >= 0) r.next = (di + 1) % r.days.length; // move the split pointer
   state.active = null;
   save(true); ui.stack = []; ui.screen = 'today'; render(); window.scrollTo(0, 0);
   toast('Workout saved');
@@ -721,6 +997,7 @@ function addExercise(exId) {
   }
   save(true); ui.q = ''; back(); toast(exName(exId) + ' added');
 }
+function focusInput(id) { setTimeout(() => { const el = document.getElementById(id); if (el) { el.focus(); el.select(); } }, 0); }
 
 /* CSV ---------------------------------------------------- */
 function csvCell(v) {
@@ -774,7 +1051,7 @@ async function importCsv(file) {
     const key = t + '|' + name; if (known.has(key)) return;
     let w = byKey.get(key); if (!w) { w = { id: uid(), dayId: null, name, start: t, end: t + 3600000, ex: [] }; byKey.set(key, w); }
     let x = state.lib.find((l) => l.name.toLowerCase() === exN.toLowerCase());
-    if (!x) { x = { id: 'c_' + uid(), name: exN, muscle: 'Custom', custom: true }; state.lib.push(x); }
+    if (!x) { x = { id: 'c_' + uid(), name: exN, muscle: 'Other', custom: true }; state.lib.push(x); }
     let e = w.ex.find((y) => y.exId === x.id); if (!e) { e = { exId: x.id, sets: [] }; w.ex.push(e); }
     e.sets.push({ kg, reps }); sets++;
   });
@@ -790,35 +1067,123 @@ const A = {
   back: () => back(),
   modalOk() { const m = ui.modal; closeModal(); if (m && m.onOk) m.onOk(); },
   modalCancel: () => closeModal(),
+  // name + greeting
+  saveName() {
+    const n = ui.nameDraft.replace(/[<>]/g, '').trim().slice(0, 30);
+    const editing = ui.screen === 'name';
+    if (!n && !editing) { toast('Enter your first name, or tap Skip'); focusInput('firstname'); return; }
+    state.settings.name = n; state.settings.onboarded = true; save(true);
+    if (editing) { back(); toast(n ? 'Name saved' : 'Name removed'); } else { ui.stack = []; ui.screen = 'today'; render(); }
+  },
+  skipName() { state.settings.onboarded = true; save(true); ui.stack = []; ui.screen = 'today'; render(); },
+  editName() { ui.nameDraft = state.settings.name; go('name'); focusInput('firstname'); },
+  // profile + settings
+  openSettings: () => go('settings'),
+  openWorkout: (d) => go('workoutDetail', { workoutId: d.id }),
+  toggleAll() { ui.showAll = !ui.showAll; render(); },
+  askDeleteWorkout() {
+    const w = state.history.find((x) => x.id === ui.workoutId); if (!w) return;
+    confirmSheet({ title: 'Delete this workout?', text: w.name + ' on ' + new Date(w.start).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' is removed from your history and progress.', ok: 'Delete workout', danger: true, onOk() {
+      state.history = state.history.filter((x) => x.id !== w.id); save(true); back(); toast('Workout deleted');
+    } });
+  },
+  // body
+  openBody() {
+    const b = state.body; const w = latestWeight();
+    const str = (v) => (v == null ? '' : fmtNum(v));
+    ui.body = { sex: b.sex, height: str(b.height), weight: w ? fmtNum(w.kg) : '', fatMode: b.fatMode, fatManual: str(b.fatManual), waist: str(b.waist), neck: str(b.neck), hip: str(b.hip) };
+    go('body');
+  },
+  bodySex(d) { ui.body.sex = d.v || null; render(); },
+  fatMode(d) { ui.body.fatMode = d.m; render(); },
+  saveBody() {
+    const d = ui.body; const limits = { height: [100, 250], weight: [25, 400], fatManual: [3, 70], waist: [40, 250], neck: [20, 80], hip: [50, 250] };
+    const out = {}; const bad = [];
+    Object.keys(limits).forEach((k) => {
+      const raw = String(d[k] ?? '').trim(); if (!raw) { out[k] = null; return; }
+      const v = parseNum(raw); const [lo, hi] = limits[k];
+      if (v === null || v < lo || v > hi) bad.push(k); else out[k] = v;
+    });
+    if (bad.length) {
+      bad.forEach((k) => { const el = document.getElementById(k); if (el) el.classList.add('err'); });
+      const names = { height: 'height (100–250 cm)', weight: 'weight (25–400 kg)', fatManual: 'body fat (3–70 %)', waist: 'waist (40–250 cm)', neck: 'neck (20–80 cm)', hip: 'hips (50–250 cm)' };
+      toast('Check ' + bad.map((k) => names[k]).join(', ')); return;
+    }
+    const b = state.body;
+    b.sex = d.sex || null; b.height = out.height; b.fatMode = d.fatMode; b.fatManual = out.fatManual; b.waist = out.waist; b.neck = out.neck; b.hip = out.hip;
+    if (out.weight != null) {
+      const last = latestWeight(); const today = startOfDay(Date.now());
+      if (last && startOfDay(last.t) === today) last.kg = out.weight;          // one entry per day
+      else if (!last || last.kg !== out.weight) b.weights.push({ t: Date.now(), kg: out.weight });
+    }
+    save(true); back(); toast('Body stats saved');
+  },
+  // home
   start: (d) => startWorkout(d.id),
+  repeat: (d) => repeatWorkout(d.id),
   resume() { ui.stack = []; ui.screen = 'workout'; render(); },
-  skipTo(d) { state.routine.next = Number(d.i); save(true); render(); },
+  skipTo(d) { const r = activeRoutine(); if (!r) return; r.next = Number(d.i); save(true); render(); },
+  // splits
+  newRoutine() {
+    const r = newRoutine('New split', 'cycle'); state.routines.push(r);
+    ui.creatingId = r.id; ui.makeActive = true;
+    save(true); go('split', { routineId: r.id }); focusInput('rname');
+  },
+  toggleMakeActive() { ui.makeActive = !ui.makeActive; render(); },
+  saveSplit() {
+    const r = routineById(ui.creatingId); if (!r) return;
+    if (!r.name.trim()) r.name = 'Untitled split';
+    if (ui.makeActive || !state.activeRoutineId) state.activeRoutineId = r.id;
+    ui.creatingId = null; save(true);
+    // a finished split sends you straight home
+    ui.stack = []; ui.screen = 'today'; render(); window.scrollTo(0, 0);
+    toast(r.name + ' saved' + (state.activeRoutineId === r.id ? ' · active' : ''));
+  },
+  cancelSplit() {
+    const r = routineById(ui.creatingId); if (!r) { back(); return; }
+    const drop = () => { state.routines = state.routines.filter((x) => x.id !== r.id); ui.creatingId = null; save(true); back(); };
+    if (r.days.length) confirmSheet({ title: 'Discard this split?', text: 'The days you added to it will be deleted.', ok: 'Discard split', danger: true, onOk: drop });
+    else drop();
+  },
+  openRoutine: (d) => go('split', { routineId: d.id }),
+  setActive(d) { state.activeRoutineId = d.id; save(true); render(); toast('Active split changed'); },
+  mode(d) { const r = routineById(ui.routineId); if (!r) return; r.mode = d.m; save(true); render(); },
+  askDeleteRoutine() {
+    const r = routineById(ui.routineId); if (!r) return;
+    confirmSheet({ title: 'Delete “' + r.name + '”?', text: 'The split and its days are removed. Past workouts are kept.', ok: 'Delete split', danger: true, onOk() {
+      state.routines = state.routines.filter((x) => x.id !== r.id);
+      if (state.activeRoutineId === r.id) state.activeRoutineId = state.routines.length ? state.routines[0].id : null;
+      save(true); back(); toast('Split deleted');
+    } });
+  },
+  // days
   newDay() {
-    const r = state.routine; const d = { id: uid(), name: 'Day ' + (r.days.length + 1), rest: false, ex: [] };
-    r.days.push(d); save(true); if (ui.screen !== 'routines') { ui.stack = []; ui.screen = 'routines'; } go('day', { dayId: d.id });
-    setTimeout(() => { const el = document.getElementById('dayname'); if (el) { el.focus(); el.select(); } }, 0);
+    const r = routineById(ui.routineId); if (!r) return;
+    const d = { id: uid(), name: 'Day ' + (r.days.length + 1), rest: false, ex: [] };
+    r.days.push(d); save(true); go('day', { dayId: d.id }); focusInput('dayname');
   },
   openDay: (d) => go('day', { dayId: d.id }),
-  mode(d) { state.routine.mode = d.m; save(true); render(); },
-  setNext(d) { state.routine.next = Number(d.i); save(true); render(); toast('Day ' + (Number(d.i) + 1) + ' is next'); },
+  setNext(d) { const f = findDay(ui.dayId); if (!f) return; f.r.next = Number(d.i); save(true); render(); toast('Day ' + (Number(d.i) + 1) + ' is next'); },
   toggleRestDay() { const d = dayById(ui.dayId); if (!d) return; d.rest = !d.rest; save(true); render(); },
   setCount(d) { const day = dayById(ui.dayId); const e = day && day.ex[Number(d.k)]; if (!e) return; e.sets = Math.min(10, Math.max(1, e.sets + Number(d.d))); save(true); render(); },
   removeDayEx(d) { const day = dayById(ui.dayId); if (!day) return; const [e] = day.ex.splice(Number(d.k), 1); save(true); render(); if (e) toast(exName(e.exId) + ' removed'); },
   askDeleteDay() {
-    const d = dayById(ui.dayId); if (!d) return;
-    confirmSheet({ title: 'Delete “' + d.name + '”?', text: 'The day is removed from your routine. Past workouts are kept.', ok: 'Delete day', danger: true, onOk() {
-      const r = state.routine; const i = r.days.indexOf(d); r.days.splice(i, 1);
-      r.week = r.week.map((id) => (id === d.id ? null : id));
-      if (r.next > i) r.next--; clampNext(); save(true); back(); toast('Day deleted');
+    const f = findDay(ui.dayId); if (!f) return;
+    confirmSheet({ title: 'Delete “' + f.d.name + '”?', text: 'The day is removed from ' + f.r.name + '. Past workouts are kept.', ok: 'Delete day', danger: true, onOk() {
+      const r = f.r; const i = r.days.indexOf(f.d); r.days.splice(i, 1);
+      r.week = r.week.map((id) => (id === f.d.id ? null : id));
+      if (r.next > i) r.next--; clampNext(r); save(true); back(); toast('Day deleted');
     } });
   },
-  pickForDay() { ui.pickFor = 'day'; ui.q = ''; go('picker'); },
-  pickForWorkout() { ui.pickFor = 'workout'; ui.q = ''; go('picker'); },
+  pickForDay() { ui.pickFor = 'day'; ui.q = ''; ui.muscle = 'All'; go('picker'); },
+  pickForWorkout() { ui.pickFor = 'workout'; ui.q = ''; ui.muscle = 'All'; go('picker'); },
+  muscle(d) { ui.muscle = d.m; render(); },
   pick: (d) => addExercise(d.id),
   createEx() {
-    const name = ui.q.trim().slice(0, 40); if (!name) return;
-    const x = { id: 'c_' + uid(), name, muscle: 'Custom', custom: true }; state.lib.push(x); addExercise(x.id);
+    const name = ui.q.replace(/[<>]/g, '').trim().slice(0, 40); if (!name) return;
+    const x = { id: 'c_' + uid(), name, muscle: ui.muscle === 'All' ? 'Other' : ui.muscle, custom: true }; state.lib.push(x); addExercise(x.id);
   },
+  // workout
   toggleSet: (d) => toggleSet(Number(d.e), Number(d.s)),
   addSet(d) { const e = state.active.ex[Number(d.e)]; const last = e.sets[e.sets.length - 1]; e.sets.push({ kg: last ? last.kg : '', reps: '', done: false }); save(true); render(); },
   removeSet(d) {
@@ -844,22 +1209,25 @@ const A = {
   finUpdate() { ui.finish.updateRoutine = !ui.finish.updateRoutine; render(); },
   finHealth() { ui.finish.health = !ui.finish.health; render(); },
   saveWorkout: () => saveWorkout(),
+  // progress
   period(d) { ui.period = Number(d.p); render(); },
   openLift: (d) => go('lift', { liftId: d.id }),
+  // settings
   toggleHealth() { state.settings.health = !state.settings.health; save(true); render(); },
   toggleAnalytics() { state.settings.analytics = !state.settings.analytics; save(true); render(); },
   importClick() { const f = document.getElementById('importFile'); f.value = ''; f.click(); },
   exportCsv: () => exportCsv(),
   openPrivacy: () => go('privacy'),
   askDeleteAll() {
-    confirmSheet({ title: 'Delete all data?', text: 'Your routine, every workout and all settings are removed from this device. This cannot be undone.', ok: 'Delete everything', danger: true, onOk() {
+    confirmSheet({ title: 'Delete all data?', text: 'Your name, body stats, splits, every workout and all settings are removed from this device. This cannot be undone.', ok: 'Delete everything', danger: true, onOk() {
       try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
-      state = baseState(); save(true); ui.stack = []; ui.screen = 'today'; render(); toast('All data deleted');
+      state = baseState(); save(true); ui.stack = []; ui.screen = 'today'; ui.nameDraft = ''; render(); toast('All data deleted');
     } });
   },
   askDemo() {
-    confirmSheet({ title: 'Load demo data?', text: 'This replaces everything on this device with a sample PPL routine and six months of workouts.', ok: 'Load demo data', onOk() {
-      state = demoState(); save(true); ui.stack = []; ui.screen = 'today'; render(); toast('Demo data loaded');
+    confirmSheet({ title: 'Load demo data?', text: 'This replaces your splits and workouts with two sample splits and a year of workouts. Your name and body stats are kept.', ok: 'Load demo data', onOk() {
+      const keep = { name: state.settings.name, onboarded: state.settings.onboarded }; const body = state.body;
+      state = demoState(); Object.assign(state.settings, keep); state.body = body; save(true); ui.stack = []; ui.screen = 'today'; render(); toast('Demo data loaded');
     } });
   }
 };
@@ -867,11 +1235,15 @@ const INPUT = {
   kg(el) { const s = state.active && state.active.ex[el.dataset.e].sets[el.dataset.s]; if (!s) return; s.kg = el.value; el.classList.remove('err'); save(); },
   reps(el) { const s = state.active && state.active.ex[el.dataset.e].sets[el.dataset.s]; if (!s) return; s.reps = el.value; el.classList.remove('err'); save(); },
   dayName(el) { const d = dayById(ui.dayId); if (d) { d.name = el.value.slice(0, 40); save(); } },
+  routineName(el) { const r = routineById(ui.routineId); if (r) { r.name = el.value.slice(0, 40); save(); } },
+  nameDraft(el) { ui.nameDraft = el.value; },
+  bodyField(el) { if (!ui.body) return; ui.body[el.dataset.f] = el.value; el.classList.remove('err'); const r = document.getElementById('bodyResults'); if (r) r.innerHTML = bodyResultsHtml(); },
   search(el) { ui.q = el.value; document.getElementById('picklist').innerHTML = pickListHtml(); }
 };
 const CHANGE = {
   dayNameDone(el) { const d = dayById(ui.dayId); if (d && !d.name.trim()) { d.name = 'Untitled day'; el.value = d.name; } save(true); },
-  weekday(el) { state.routine.week[Number(el.dataset.w)] = el.value || null; save(true); toast(el.value ? 'Saved' : 'Set to rest'); },
+  routineNameDone(el) { const r = routineById(ui.routineId); if (r && !r.name.trim()) { r.name = 'Untitled split'; el.value = r.name; } save(true); },
+  weekday(el) { const r = routineById(ui.routineId); if (!r) return; r.week[Number(el.dataset.w)] = el.value || null; save(true); toast(el.value ? 'Saved' : 'Set to rest'); },
   import(el) { importCsv(el.files && el.files[0]).catch((e) => { console.error(e); toast('Could not read that file'); }); }
 };
 
@@ -883,7 +1255,10 @@ document.addEventListener('click', (ev) => {
 });
 document.addEventListener('input', (ev) => { const k = ev.target.dataset && ev.target.dataset.input; if (k && INPUT[k]) INPUT[k](ev.target); });
 document.addEventListener('change', (ev) => { const k = ev.target.dataset && ev.target.dataset.change; if (k && CHANGE[k]) CHANGE[k](ev.target); });
-document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && ui.modal) closeModal(); });
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape' && ui.modal) closeModal();
+  if (ev.key === 'Enter' && ev.target.id === 'firstname') { ev.preventDefault(); A.saveName(); }
+});
 document.addEventListener('visibilitychange', () => { if (document.hidden) save(true); });
 window.addEventListener('pagehide', () => save(true));
 
