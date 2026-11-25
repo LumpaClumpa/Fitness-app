@@ -12,7 +12,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg)}
 body{font:15px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
-button,select,input{font:inherit;color:inherit}
+button,select,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer;background:none;border:0;padding:0;text-align:inherit}
 button:disabled{cursor:not-allowed}
 :focus-visible{outline:2px solid var(--accent-text);outline-offset:2px}
@@ -71,13 +71,24 @@ select{background:var(--field);border:0;border-radius:8px;height:36px;padding:0 
 .home{padding:0 20px}
 .home-top{position:relative;height:calc(100svh - 84px - env(safe-area-inset-bottom));min-height:540px}
 .home-head{position:absolute;top:0;left:0;right:0;padding-top:calc(env(safe-area-inset-top) + 40px);z-index:1}
-.home-bar{display:flex;align-items:center;justify-content:space-between}
+.home-bar{display:flex;align-items:center;gap:10px}
+.splitwrap{position:relative;min-width:0}
+.splitbtn{display:flex;align-items:center;gap:6px;height:40px;padding:0 12px;border-radius:20px;background:var(--field);font-size:15px;font-weight:600;max-width:240px}
+.splitname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.menu{position:absolute;top:46px;left:0;z-index:10;min-width:240px;background:#17191E;border:1px solid var(--line);border-radius:14px;padding:6px;display:flex;flex-direction:column;box-shadow:0 12px 32px rgba(0,0,0,.5)}
+.mitem{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:48px;padding:6px 10px;border-radius:10px;text-align:left;font-size:15px}
+.mitem:hover{background:var(--field)}
+.mitem .sub{font-size:12px;color:var(--muted)}
 .avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center}
 .greet{margin:20px 0 0;font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
-.hero{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;text-align:center;gap:6px;pointer-events:none}
+.hero{position:absolute;inset:0;display:grid;grid-template-rows:1fr auto 1fr;text-align:center;pointer-events:none}
+.hero-up{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding-bottom:18px}
+.hero-down{display:flex;flex-direction:column;gap:4px;padding-top:4px}
+.weekbox{display:flex;flex-direction:column;gap:10px;text-align:left;margin-top:10px;padding-top:14px;border-top:1px solid var(--line)}
+.streakrow{display:flex;align-items:center;gap:10px}
 .hero>*{pointer-events:auto}
 .hero-day{font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
-.hero .btn{height:56px;font-size:17px;margin-top:18px;border-radius:14px}
+.hero .btn{height:56px;font-size:17px;border-radius:14px}
 .below{display:flex;flex-direction:column;gap:32px;padding-bottom:calc(env(safe-area-inset-bottom) + 108px)}
 .hscroll{display:flex;gap:12px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none}
 .hscroll::-webkit-scrollbar{display:none}
@@ -97,8 +108,11 @@ select{background:var(--field);border:0;border-radius:8px;height:36px;padding:0 
 .chip{height:36px;padding:0 10px;border-radius:8px;background:var(--field);font-size:14px;text-align:center;white-space:nowrap;flex:none}
 .chip.on{background:var(--accent);color:#fff}
 .track{height:2px;background:var(--line)}.fill{height:2px;background:var(--focus);width:0}
-.wk-body{padding:24px 20px calc(env(safe-area-inset-bottom) + 40px);display:flex;flex-direction:column;gap:32px}
+.wk-body{padding:16px 16px calc(env(safe-area-inset-bottom) + 40px);display:flex;flex-direction:column;gap:12px}
 .ex{gap:4px}
+.card{background:#111317;border:1px solid var(--line);border-radius:16px;padding:14px 12px 6px;scroll-margin-top:130px;transition:opacity .25s}
+.card.done{opacity:.45}
+.card.done:focus-within{opacity:1}
 .ex-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-bottom:4px}
 .ex-name{font-size:16px;font-weight:600}
 .set-grid{display:grid;grid-template-columns:32px 1fr 1fr 44px;gap:8px;align-items:center}
@@ -130,6 +144,23 @@ select{background:var(--field);border:0;border-radius:8px;height:36px;padding:0 
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:4px}
 .pthumb{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);text-align:left}
 .pthumb img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;background:var(--field)}
+.donut{display:flex;align-items:center;gap:20px;padding-top:4px}
+.donut svg{flex:none}
+.legend{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
+.leg{display:grid;grid-template-columns:10px 1fr auto;align-items:center;gap:8px;font-size:14px}
+.ldot{width:8px;height:8px;border-radius:50%}
+.banner{position:relative;margin:0 -20px;height:calc(150px + env(safe-area-inset-top));background:#15171B;overflow:hidden}
+.banner img{width:100%;height:100%;object-fit:cover;filter:brightness(.8)}
+.banner.preview{margin:0;height:110px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.banner-bar{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 40px) 20px 0;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.iconbtn.round{background:rgba(10,11,13,.55);border-radius:22px;color:var(--fg)}
+.phead{margin-top:-62px;gap:4px;position:relative}
+.avatar.big{width:76px;height:76px;font-size:30px;box-shadow:0 0 0 4px var(--bg)}
+.bio{margin:6px 0 0;font-size:15px;line-height:1.45;white-space:pre-line}
+.flag{flex:none;display:block}
+.atfield{display:flex;align-items:center;background:var(--field);border-radius:10px}
+.atfield>span{padding-left:12px;color:var(--muted);font-size:16px}
+.atfield .text{background:transparent;padding-left:4px}
 .empty{color:var(--muted);font-size:14px;padding:12px 0;border-top:1px solid var(--line)}
 </style>
 </head>
@@ -139,6 +170,7 @@ select{background:var(--field);border:0;border-radius:8px;height:36px;padding:0 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <input type="file" id="importFile" accept=".csv,text/csv" hidden data-change="import">
 <input type="file" id="photoFile" accept="image/*" hidden data-change="photo">
+<input type="file" id="bannerFile" accept="image/*" hidden data-change="banner">
 <noscript><p style="padding:24px">This app needs JavaScript.</p></noscript>
 <script>
 'use strict';
@@ -206,10 +238,68 @@ const ICON = {
   xs: svg('<path d="M7 7l10 10M17 7L7 17"/>', 16, 2),
   check: svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 18, 2.4),
   plus: svg('<path d="M12 5v14M5 12h14"/>', 22, 2),
-  back: svg('<path d="M15 6l-6 6 6 6"/>', 18, 2)
+  back: svg('<path d="M15 6l-6 6 6 6"/>', 18, 2),
+  chev: svg('<path d="M6 9l6 6 6-6"/>', 16, 2)
 };
 
 /* ---------- seed data ---------- */
+const EQUIPMENT = ['Machine', 'Free weight', 'Cable', 'Bodyweight', 'Cardio machine', 'Outdoor', 'Other'];
+const EQ_OF = (() => {
+  const m = {}; const set = (eq, ids) => ids.split(' ').forEach((id) => { m[id] = eq; });
+  set('Free weight', 'bench incdb row deadlift shrug ohp arnold lateral curl preacher hammer skull wristcurl revcurl squat bulgarian rdl');
+  set('Machine', 'pecdeck tbar rearfly pendulum hack legpress legext legcurl lyingcurl hipthrust adduction abduction calf seatedcalf');
+  set('Cable', 'flye latpd cablerow facepull cablecurl pushdown ohext crunch');
+  set('Bodyweight', 'dip pushup pullup legraise abwheel');
+  set('Cardio machine', 'treadmill bike rower stairs elliptical'); set('Outdoor', 'run');
+  return m;
+})();
+/* Countries (EU first) and simple SVG flags, so they look the same on every device */
+const COUNTRIES = [['AT', 'Austria'], ['BE', 'Belgium'], ['BG', 'Bulgaria'], ['HR', 'Croatia'], ['CY', 'Cyprus'], ['CZ', 'Czechia'], ['DK', 'Denmark'],
+  ['EE', 'Estonia'], ['FI', 'Finland'], ['FR', 'France'], ['DE', 'Germany'], ['GR', 'Greece'], ['HU', 'Hungary'], ['IS', 'Iceland'], ['IE', 'Ireland'],
+  ['IT', 'Italy'], ['LV', 'Latvia'], ['LT', 'Lithuania'], ['LU', 'Luxembourg'], ['MT', 'Malta'], ['NL', 'Netherlands'], ['NO', 'Norway'], ['PL', 'Poland'],
+  ['PT', 'Portugal'], ['RO', 'Romania'], ['SK', 'Slovakia'], ['SI', 'Slovenia'], ['ES', 'Spain'], ['SE', 'Sweden'], ['CH', 'Switzerland'], ['UA', 'Ukraine'],
+  ['GB', 'United Kingdom'], ['US', 'United States'], ['XX', 'Other']];
+const countryName = (c) => (COUNTRIES.find((x) => x[0] === c) || [c, ''])[1];
+function guessCountry() {
+  const langs = navigator.languages || [navigator.language || ''];
+  for (const l of langs) { const m = /-([A-Z]{2})$/i.exec(l); if (m && COUNTRIES.some((c) => c[0] === m[1].toUpperCase())) return m[1].toUpperCase(); }
+  return '';
+}
+const FLAG = {
+  DK: ['nordic', '#C8102E', '#FFF'], SE: ['nordic', '#006AA7', '#FECC00'], FI: ['nordic', '#FFF', '#002F6C'], NO: ['nordic2', '#BA0C2F', '#FFF', '#00205B'], IS: ['nordic2', '#02529C', '#FFF', '#DC1E35'],
+  DE: ['h', '#000', '#DD0000', '#FFCE00'], NL: ['h', '#AE1C28', '#FFF', '#21468B'], LU: ['h', '#EF3340', '#FFF', '#00A3E0'], AT: ['h', '#ED2939', '#FFF', '#ED2939'],
+  HU: ['h', '#CE2939', '#FFF', '#477050'], BG: ['h', '#FFF', '#00966E', '#D62612'], LT: ['h', '#FDB913', '#006A44', '#C1272D'], EE: ['h', '#0072CE', '#000', '#FFF'],
+  LV: ['h', '#9E3039', '#FFF', '#9E3039'], HR: ['h', '#FF0000', '#FFF', '#171796'], SI: ['h', '#FFF', '#005DA4', '#ED1C24'], SK: ['h', '#FFF', '#0B4EA2', '#EE1C25'],
+  PL: ['h2', '#FFF', '#DC143C'], UA: ['h2', '#0057B7', '#FFD700'],
+  FR: ['v', '#0055A4', '#FFF', '#EF4135'], IT: ['v', '#009246', '#FFF', '#CE2B37'], IE: ['v', '#169B62', '#FFF', '#FF883E'], BE: ['v', '#000', '#FDDA24', '#EF3340'], RO: ['v', '#002B7F', '#FCD116', '#CE1126']
+};
+function flagSvg(code, w = 22) {
+  if (!code) return '';
+  const f = FLAG[code]; let b = '';
+  const R = (x, y, ww, hh, c) => `<rect x="${x}" y="${y}" width="${ww}" height="${hh}" fill="${c}"/>`;
+  if (f && f[0] === 'h') b = R(0, 0, 30, 6.67, f[1]) + R(0, 6.67, 30, 6.67, f[2]) + R(0, 13.33, 30, 6.67, f[3]);
+  else if (f && f[0] === 'h2') b = R(0, 0, 30, 10, f[1]) + R(0, 10, 30, 10, f[2]);
+  else if (f && f[0] === 'v') b = R(0, 0, 10, 20, f[1]) + R(10, 0, 10, 20, f[2]) + R(20, 0, 10, 20, f[3]);
+  else if (f && f[0] === 'nordic') b = R(0, 0, 30, 20, f[1]) + R(9, 0, 3.5, 20, f[2]) + R(0, 8.25, 30, 3.5, f[2]);
+  else if (f && f[0] === 'nordic2') b = R(0, 0, 30, 20, f[1]) + R(8.5, 0, 5, 20, f[2]) + R(0, 7.5, 30, 5, f[2]) + R(9.75, 0, 2.5, 20, f[3]) + R(0, 8.75, 30, 2.5, f[3]);
+  else if (code === 'ES') b = R(0, 0, 30, 20, '#AA151B') + R(0, 5, 30, 10, '#F1BF00');
+  else if (code === 'PT') b = R(0, 0, 12, 20, '#006600') + R(12, 0, 18, 20, '#FF0000') + '<circle cx="12" cy="10" r="3.2" fill="#FFE000"/>';
+  else if (code === 'MT') b = R(0, 0, 15, 20, '#FFF') + R(15, 0, 15, 20, '#CF142B');
+  else if (code === 'CH') b = R(0, 0, 30, 20, '#DA291C') + R(13, 4, 4, 12, '#FFF') + R(9, 8, 12, 4, '#FFF');
+  else if (code === 'CZ') b = R(0, 0, 30, 10, '#FFF') + R(0, 10, 30, 10, '#D7141A') + '<polygon points="0,0 15,10 0,20" fill="#11457E"/>';
+  else if (code === 'CY') b = R(0, 0, 30, 20, '#FFF') + '<ellipse cx="15" cy="9" rx="7" ry="3.2" fill="#D57800"/><path d="M11 14.5q4 2 8 0" stroke="#4E5B31" stroke-width="1.2" fill="none"/>';
+  else if (code === 'GR') { for (let i = 0; i < 9; i++) b += R(0, i * 20 / 9, 30, 20 / 9, i % 2 ? '#FFF' : '#0D5EAF'); b += R(0, 0, 11.1, 11.1, '#0D5EAF') + R(4.44, 0, 2.22, 11.1, '#FFF') + R(0, 4.44, 11.1, 2.22, '#FFF'); }
+  else if (code === 'GB') b = R(0, 0, 30, 20, '#012169') + '<path d="M0 0L30 20M30 0L0 20" stroke="#FFF" stroke-width="4"/><path d="M0 0L30 20M30 0L0 20" stroke="#C8102E" stroke-width="1.4"/>' + R(12.5, 0, 5, 20, '#FFF') + R(0, 7.5, 30, 5, '#FFF') + R(13.5, 0, 3, 20, '#C8102E') + R(0, 8.5, 30, 3, '#C8102E');
+  else if (code === 'US') { for (let i = 0; i < 13; i++) b += R(0, i * 20 / 13, 30, 20 / 13, i % 2 ? '#FFF' : '#B22234'); b += R(0, 0, 12, 10.77, '#3C3B6E'); }
+  else b = R(0, 0, 30, 20, '#2A2D33') + '<circle cx="15" cy="10" r="5" fill="none" stroke="#8E929B" stroke-width="1.2"/><path d="M10 10h10M15 5c-2.5 3-2.5 7 0 10M15 5c2.5 3 2.5 7 0 10" stroke="#8E929B" stroke-width="1" fill="none"/>';
+  return `<svg class="flag" width="${w}" height="${Math.round(w * 2 / 3)}" viewBox="0 0 30 20" role="img" aria-label="${esc(code === 'XX' ? 'Country' : 'Flag of ' + countryName(code))}"><clipPath id="fc${code}${w}"><rect width="30" height="20" rx="2.5"/></clipPath><g clip-path="url(#fc${code}${w})">${b}</g><rect width="30" height="20" rx="2.5" fill="none" stroke="rgba(255,255,255,.18)"/></svg>`;
+}
+const USER_RE = /^[a-z0-9._]{3,20}$/;
+const cleanUser = (v) => String(v || '').trim().replace(/^@/, '').toLowerCase();
+const userError = (u) => !u ? 'Choose a username' : u.length < 3 ? 'Usernames need at least 3 characters' : u.length > 20 ? 'Usernames can be at most 20 characters' : !USER_RE.test(u) ? 'Use only letters, numbers, dots and underscores' : /^[._]|[._]$/.test(u) ? 'Usernames can’t start or end with . or _' : '';
+const suggestUser = (n) => String(n || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/æ/g, 'ae').replace(/ø/g, 'oe').replace(/å/g, 'aa').replace(/[^a-z0-9]/g, '').slice(0, 20);
+const countryOptions = (sel) => `<option value="">Choose country</option>` + COUNTRIES.map(([c, n]) => `<option value="${c}"${c === sel ? ' selected' : ''}>${esc(n)}</option>`).join('');
+
 const MUSCLES = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Forearms', 'Quads', 'Hamstrings', 'Glutes & hips', 'Calves', 'Abs', 'Cardio', 'Other'];
 const LIB = [
   ['bench', 'Bench Press', 'Chest'], ['incdb', 'Incline Dumbbell Press', 'Chest'], ['flye', 'Cable Flye', 'Chest'],
@@ -229,7 +319,7 @@ const LIB = [
   ['crunch', 'Cable Crunch', 'Abs'], ['legraise', 'Hanging Leg Raise', 'Abs'], ['abwheel', 'Ab Wheel Rollout', 'Abs'],
   ['treadmill', 'Treadmill Incline Walk', 'Cardio', 'cardio'], ['run', 'Running', 'Cardio', 'cardio'], ['bike', 'Stationary Bike', 'Cardio', 'cardio'],
   ['rower', 'Rowing Machine', 'Cardio', 'cardio'], ['stairs', 'Stair Climber', 'Cardio', 'cardio'], ['elliptical', 'Elliptical', 'Cardio', 'cardio']
-].map(([id, name, muscle, type]) => ({ id, name, muscle, type: type || 'weight', custom: false }));
+].map(([id, name, muscle, type]) => ({ id, name, muscle, type: type || 'weight', eq: EQ_OF[id] || 'Other', custom: false }));
 
 const PPL = [
   ['Push A', ['bench', 3, 6, 10], ['incdb', 3, 8, 12], ['ohp', 3, 6, 10], ['lateral', 3, 12, 15], ['dip', 2, 8, 12], ['pushdown', 3, 10, 15]],
@@ -264,14 +354,15 @@ const newRoutine = (name, mode) => ({ id: uid(), name, mode, next: 0, days: [], 
 function baseState() {
   return {
     v: 2,
-    settings: { name: '', onboarded: false, onbStep: 0, rest: { on: true, sound: true, secs: 180, per: {} }, health: true, analytics: false },
+    settings: { name: '', username: '', country: '', bio: '', onboarded: false, onbStep: 0, rest: { on: true, sound: true, secs: 180, per: {} }, health: true, analytics: false },
     lib: LIB.map((x) => ({ ...x })),
     routines: [],
     activeRoutineId: null,
     history: [],
     active: null,
     body: emptyBody(),
-    goal: null
+    goal: null,
+    friends: []
   };
 }
 function emptyBody() { return { sex: null, height: null, weights: [], fatMode: 'navy', fatManual: null, waist: null, neck: null, hip: null }; }
@@ -323,9 +414,13 @@ function migrate(s) {
     if (!s.body) s.body = emptyBody();
     if (s.goal === undefined) s.goal = null;
     if (s.settings.onbStep === undefined) s.settings.onbStep = 0;
+    if (s.settings.country === undefined) s.settings.country = '';
+    if (s.settings.bio === undefined) s.settings.bio = '';
+    if (s.settings.username === undefined) s.settings.username = '';
+    if (!s.friends) s.friends = [];
     // keep built-in exercises in sync with the current muscle groups, add new built-ins
     const have = new Set(s.lib.map((x) => x.id));
-    s.lib.forEach((x) => { const b = LIB.find((l) => l.id === x.id); if (b) { x.muscle = b.muscle; x.type = b.type; } else { if (!MUSCLES.includes(x.muscle)) x.muscle = 'Other'; if (!x.type) x.type = 'weight'; } });
+    s.lib.forEach((x) => { const b = LIB.find((l) => l.id === x.id); if (b) { x.muscle = b.muscle; x.type = b.type; x.eq = b.eq; } else { if (!MUSCLES.includes(x.muscle)) x.muscle = 'Other'; if (!x.type) x.type = 'weight'; if (!x.eq) x.eq = 'Other'; } });
     LIB.forEach((b) => { if (!have.has(b.id)) s.lib.push({ ...b }); });
   }
   return s;
@@ -349,6 +444,7 @@ const ui = {
   screen: state.active ? 'workout' : 'today', stack: [], routineId: null, dayId: null, liftId: null, period: 365,
   q: '', pickFor: null, modal: null, finish: null, nameDraft: '',
   goalDraft: null, editExId: null, exDraft: null,
+  countryDraft: guessCountry(), bioDraft: '', userDraft: '', profUser: '', profCountry: '',
   creatingId: null, makeActive: true, muscle: 'All', body: null, showAll: false, workoutId: null,
   greet: Math.floor(Math.random() * 1000)
 };
@@ -357,6 +453,7 @@ const ui = {
 const exById = (id) => state.lib.find((x) => x.id === id);
 const exName = (id) => (exById(id) || { name: 'Unknown exercise' }).name;
 const isCardio = (id) => (exById(id) || {}).type === 'cardio';
+const eqOf = (id) => (exById(id) || {}).eq || '';
 const routineById = (id) => state.routines.find((r) => r.id === id) || null;
 const activeRoutine = () => routineById(state.activeRoutineId);
 function findDay(dayId) {
@@ -413,7 +510,7 @@ function back() {
   ui.screen = p.screen; ui.routineId = p.routineId; ui.dayId = p.dayId; ui.liftId = p.liftId; ui.workoutId = p.workoutId; ui.photoId = p.photoId; render(); window.scrollTo(0, p.y || 0);
 }
 const prevScreen = () => (ui.stack.length ? ui.stack[ui.stack.length - 1].screen : '');
-const backLabel = (fallback) => ({ picker: 'Back', myEx: 'Your exercises', today: 'Today', routines: 'Routines', progress: 'Progress', profile: 'Profile', settings: 'Settings', split: (routineById(ui.routineId) || {}).name || 'Split' }[prevScreen()] || fallback);
+const backLabel = (fallback) => ({ allEx: 'Exercises', picker: 'Back', myEx: 'Your exercises', today: 'Today', routines: 'Routines', progress: 'Progress', profile: 'Profile', settings: 'Settings', split: (routineById(ui.routineId) || {}).name || 'Split' }[prevScreen()] || fallback);
 
 /* ---------- body: BMI + body fat ---------- */
 function latestWeight() { const w = state.body.weights; return w.length ? w[w.length - 1] : null; }
@@ -509,52 +606,73 @@ function vName(edit) {
     <header>${edit ? '' : stepHtml(1)}<h1 class="title">${edit ? 'Your name' : 'Welcome'}</h1><div class="muted" style="margin-top:6px">${edit ? 'Shown in your greeting on the home screen.' : 'What should we call you?'}</div></header>
     <section><label class="label" for="firstname">First name</label>
       <input id="firstname" class="text" maxlength="30" autocomplete="given-name" autocapitalize="words" enterkeyhint="done" data-input="nameDraft" value="${esc(ui.nameDraft)}"></section>
+    ${edit ? '' : `<section><label class="label" for="username">Username</label>
+      <div class="atfield"><span aria-hidden="true">@</span><input id="username" class="text" maxlength="21" autocomplete="username" autocapitalize="none" spellcheck="false" data-input="userDraft" value="${esc(ui.userDraft)}" placeholder="yourname"></div>
+      <div class="muted small" id="userHint">Friends will find and add you by this name. Letters, numbers, dots and underscores.</div></section>
+    <section><label class="label" for="country">Country</label>
+      <div style="display:flex;align-items:center;gap:10px"><span id="countryFlag" style="display:flex">${flagSvg(ui.countryDraft, 30)}</span><select id="country" class="text" style="max-width:none;flex:1" autocomplete="country" data-change="countryDraft">${countryOptions(ui.countryDraft)}</select></div></section>`}
     <section><button class="btn" data-act="saveName">${edit ? 'Save' : 'Continue'}</button>
       ${edit ? '' : '<button class="btn-quiet" data-act="skipName">Skip for now</button>'}</section>
   </main>`;
 }
 
+function splitMenuHtml() {
+  const r = activeRoutine();
+  if (!state.routines.length) return `<button class="splitbtn" data-act="newRoutine">+ Create a split</button>`;
+  const items = state.routines.map((x) => `<button class="mitem" role="menuitemradio" aria-checked="${x.id === state.activeRoutineId}" data-act="pickSplit" data-id="${x.id}">
+      <span><span style="display:block;${x.id === state.activeRoutineId ? 'font-weight:600' : ''}">${esc(x.name)}</span><span class="sub">${x.days.length} day${x.days.length === 1 ? '' : 's'} · ${modeName(x.mode)}</span></span>${x.id === state.activeRoutineId ? `<span class="pos">${ICON.check}</span>` : ''}</button>`).join('');
+  return `<div class="splitwrap"><button class="splitbtn" data-act="splitMenu" aria-haspopup="menu" aria-expanded="${!!ui.splitMenu}" aria-label="Active split: ${esc(r ? r.name : 'none')}. Change split">
+      <span class="splitname">${esc(r ? r.name : 'Choose a split')}</span>${ICON.chev}</button>
+    ${ui.splitMenu ? `<div class="menu" role="menu" aria-label="Your splits">${items}
+      <button class="mitem" role="menuitem" data-act="newRoutine"><span class="pos">+ New split</span></button>
+      <button class="mitem" role="menuitem" data-act="editSplits"><span>Edit splits</span></button></div>` : ''}</div>`;
+}
+function weekBlockHtml() {
+  const now = new Date(); const mon = startOfDay(now.getTime() - todayIndex() * DAY);
+  const trained = new Set(state.history.filter((w) => w.start >= mon).map((w) => Math.floor((startOfDay(w.start) - mon) / DAY)));
+  const ti = todayIndex();
+  const week = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((l, i) => `<div class="${i === ti ? 'today' : ''}">${l}<span class="dot${trained.has(i) ? ' on' : i === ti ? ' ring' : ''}"></span></div>`).join('');
+  const st = streakInfo(); const g = state.goal;
+  const streakTxt = st.n ? `<span class="pos" style="font-weight:600">${fmtStreak(st)}</span> in a row${st.need > 1 ? ' hitting your goal' : ''}`
+    : g ? `Hit ${g.count} workouts this ${g.per} to start a streak` : 'Train this week to start a streak';
+  return `<div class="weekbox">
+    <div class="headrow"><span class="label">This week</span>${goalNowHtml()}</div>
+    <div class="week" aria-label="Days trained this week">${week}</div>
+    <div class="streakrow" id="streakHome"><span style="${st.n ? '' : 'opacity:.35'}">${flameHtml(st.n, fmtStreak(st) + ' streak', 30)}</span><span class="small muted">${streakTxt}</span></div></div>`;
+}
 function vToday() {
   if (!state.settings.onboarded) { ui.screen = 'welcome'; return vOnboarding(); }
   const a = state.active;
   const name = state.settings.name;
   const date = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-  let hero;
+  let up = '', mid = '', down = '';
   if (a) {
-    hero = `<div class="label">In progress · started ${new Date(a.start).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
-      <div class="hero-day">${esc(a.name)}</div>
-      <button class="btn" data-act="resume">Resume workout</button>`;
+    up = `<div class="label">In progress · started ${new Date(a.start).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div><div class="hero-day">${esc(a.name)}</div>`;
+    mid = `<button class="btn" data-act="resume">Resume workout</button>`;
   } else {
     const nd = nextDay();
     if (!nd) {
-      hero = `<div class="label">No active split</div><div class="hero-day">Build your split</div>
-        <div class="muted small">Add the days you train and the app will line up the next one.</div>
-        <button class="btn" data-act="${state.routines.length ? 'tab' : 'newRoutine'}" data-s="routines">${state.routines.length ? 'Choose a split' : 'Create a split'}</button>`;
+      up = `<div class="label">No active split</div><div class="hero-day">Build your split</div><div class="muted small">Add the days you train and the app will line up the next one.</div>`;
+      mid = `<button class="btn" data-act="${state.routines.length ? 'splitMenu' : 'newRoutine'}">${state.routines.length ? 'Choose a split' : 'Create a split'}</button>`;
     } else {
       const r = nd.r;
-      const where = r.mode === 'cycle' ? (nd.index >= 0 ? 'Day ' + (nd.index + 1) + ' of ' + r.days.length : '') : WEEKDAYS[todayIndex()];
-      const label = `<div class="label">${esc(r.name)}${where ? ' · ' + where : ''}</div>`;
+      const where = r.mode === 'cycle' ? (nd.index >= 0 ? 'Next · Day ' + (nd.index + 1) + ' of ' + r.days.length : 'Next') : WEEKDAYS[todayIndex()];
+      const label = `<div class="label">${where}</div>`;
       if (!r.days.length) {
-        hero = `${label}<div class="hero-day">No days yet</div><div class="muted small">Add the days you train to this split.</div>
-          <button class="btn" data-act="openRoutine" data-id="${r.id}">Add days</button>`;
+        up = `${label}<div class="hero-day">No days yet</div><div class="muted small">Add the days you train to this split.</div>`;
+        mid = `<button class="btn" data-act="openRoutine" data-id="${r.id}">Add days</button>`;
       } else if (!nd.day || nd.day.rest || !nd.day.ex.length) {
         const after = r.mode === 'cycle' ? nextTrainingAfter(r, nd.index) : null;
         const isEmptyDay = nd.day && !nd.day.rest;
-        hero = `${label}<div class="hero-day">${isEmptyDay ? esc(nd.day.name) : 'Rest day'}</div>
-          <div class="muted small">${isEmptyDay ? 'No exercises in this day yet.' : 'Recovery is part of the plan.'}</div>
-          ${after ? `<button class="btn" data-act="skipTo" data-i="${after.index}">Skip to ${esc(after.day.name)}</button>` : `<button class="btn" data-act="openRoutine" data-id="${r.id}">Train another day</button>`}`;
+        up = `${label}<div class="hero-day">${isEmptyDay ? esc(nd.day.name) : 'Rest day'}</div><div class="muted small">${isEmptyDay ? 'No exercises in this day yet.' : 'Recovery is part of the plan.'}</div>`;
+        mid = after ? `<button class="btn" data-act="skipTo" data-i="${after.index}">Skip to ${esc(after.day.name)}</button>` : `<button class="btn" data-act="openRoutine" data-id="${r.id}">Train another day</button>`;
       } else {
-        hero = `${label}<div class="hero-day">${esc(nd.day.name)}</div>
-          <div class="muted small">${nd.day.ex.length} exercises · about ${typicalMinutes(nd.day)} min</div>
-          <button class="btn" data-act="start" data-id="${nd.day.id}">Start workout</button>
-          <button class="btn-quiet" data-act="openRoutine" data-id="${r.id}">Choose another day</button>`;
+        up = `${label}<div class="hero-day">${esc(nd.day.name)}</div><div class="muted small">${nd.day.ex.length} exercises · about ${typicalMinutes(nd.day)} min</div>`;
+        mid = `<button class="btn" data-act="start" data-id="${nd.day.id}">Start workout</button>`;
+        down = `<button class="btn-quiet" data-act="openRoutine" data-id="${r.id}">Choose another day</button>`;
       }
     }
   }
-  // routines strip
-  const cards = state.routines.map((r) => `<button class="rcard${r.id === state.activeRoutineId ? ' on' : ''}" data-act="openRoutine" data-id="${r.id}">
-      <span class="n">${esc(r.name)}</span><span class="muted small">${r.days.length} day${r.days.length === 1 ? '' : 's'} · ${modeName(r.mode)}${r.id === state.activeRoutineId ? ' · <span class="pos">Active</span>' : ''}</span></button>`).join('')
-    + `<button class="rcard" data-act="newRoutine"><span class="n pos">+ New split</span><span class="muted small">Cycle or weekdays</span></button>`;
   // repeat a workout
   const recent = state.history.slice(-4).reverse();
   const repeat = recent.length ? recent.map((w) => {
@@ -562,27 +680,20 @@ function vToday() {
     const when = old ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
     return `<button class="row" data-act="repeat" data-id="${esc(w.id)}" aria-label="Repeat ${esc(w.name)} from ${when}"><span><span class="row-main" style="display:block">${esc(w.name)}</span><span class="sub">${when} · ${fmtDur(w.end - w.start)}</span></span><span class="pos small">Repeat</span></button>`;
   }).join('') : '<div class="empty">Your finished workouts show up here.</div>';
-  // this week
-  const now = new Date(); const mon = startOfDay(now.getTime() - todayIndex() * DAY);
-  const trained = new Set(state.history.filter((w) => w.start >= mon).map((w) => Math.floor((startOfDay(w.start) - mon) / DAY)));
-  const ti = todayIndex();
-  const week = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((l, i) => `<div class="${i === ti ? 'today' : ''}">${l}<span class="dot${trained.has(i) ? ' on' : i === ti ? ' ring' : ''}"></span></div>`).join('');
   return `<main class="home">
     <div class="home-top">
       <header class="home-head">
-        <div class="home-bar"><button class="avatar" data-act="tab" data-s="profile" aria-label="Your profile">${name ? esc(name.charAt(0).toUpperCase()) : ICON.user}</button><span class="muted small">${date}</span></div>
+        <div class="home-bar"><button class="avatar" data-act="tab" data-s="profile" aria-label="Your profile">${name ? esc(name.charAt(0).toUpperCase()) : ICON.user}</button>${splitMenuHtml()}</div>
         <h1 class="greet" id="greeting">${esc(greeting())}</h1>
+        <div class="muted small" style="margin-top:4px">${date}</div>
       </header>
-      <div class="hero" id="hero">${hero}</div>
+      <div class="hero" id="hero"><div class="hero-up">${up}</div><div class="hero-mid">${mid}</div><div class="hero-down">${down}${weekBlockHtml()}</div></div>
     </div>
     <div class="below">
-      <section><div class="label">Routines</div><div class="hscroll">${cards}</div></section>
       <section class="list"><div class="label">Repeat a workout</div>${repeat}</section>
-      <section><div class="headrow"><span class="label">This week</span>${goalNowHtml()}</div><div class="week" aria-label="Days trained this week">${week}</div>${streakLineHtml()}</section>
     </div>
   </main>${tabsHtml()}`;
 }
-
 function vWorkout() {
   const a = state.active;
   if (!a) { ui.screen = 'today'; return vToday(); }
@@ -592,7 +703,7 @@ function vWorkout() {
   let h = `<div class="wk-top"><header class="wk-head">
       <button class="x" data-act="askDiscard" aria-label="Discard workout">${ICON.x}</button>
       <div class="wk-title"><div class="t">${esc(a.name)}</div><div class="muted small tnum"><span id="elapsed">${fmtClock(Math.floor((Date.now() - a.start) / 1000))}</span> · <span id="setcount">${done}/${total}</span> sets</div></div>
-      <button class="btn-sm" data-act="goFinish">Finish</button></header>
+      <button class="iconbtn" style="justify-self:end" data-act="pickForWorkout" aria-label="Add exercise">${ICON.plus}</button></header>
     <div id="restbar" class="restbar" hidden>
       <div class="restrow"><div><span class="muted small">Rest</span><span class="v" id="restlabel">0:00</span></div>
         <div style="display:flex;gap:4px"><button class="chip" data-act="restMinus">−15</button><button class="chip" data-act="restPlus">+15</button><button class="chip link" style="background:none" data-act="restSkip">Skip</button></div></div>
@@ -608,7 +719,9 @@ function vWorkout() {
     const range = e.min && e.max ? e.min + '–' + e.max + ' reps · ' : '';
     const meta = cardio ? '<span class="link-muted">Cardio</span>'
       : `<button class="link-muted" data-act="openRest">${range}rest ${restOn ? (nextEx && e.ss && nextEx.ss === e.ss ? 'after superset' : fmtTime(restFor(e.exId))) : 'off'}</button>`;
-    h += `<section class="ex" aria-label="${esc(exName(e.exId))}"><div class="ex-head"><span><span class="ex-name">${esc(exName(e.exId))}</span>${linked ? `<span class="pos small" style="display:block">Superset with ${esc(partners)}</span>` : ''}</span>${meta}</div>`;
+    const allDone = e.sets.length > 0 && e.sets.every((x) => x.done);
+    h += `<section class="ex card${allDone ? ' done' : ''}" id="ex-${ei}" aria-label="${esc(exName(e.exId))}${allDone ? ', done' : ''}"><div class="ex-head"><span><span class="ex-name">${esc(exName(e.exId))}</span>
+      <span class="small muted" style="display:block">${esc(eqOf(e.exId))}${linked ? ` · <span class="pos">Superset with ${esc(partners)}</span>` : ''}</span></span>${allDone ? `<span class="pos small" style="display:flex;align-items:center;gap:4px">${ICON.check}Done</span>` : meta}</div>`;
     if (cardio) {
       h += `<div class="set-grid c set-head"><span>SET</span><span>MIN</span><span>KM</span><span>INC %</span><span></span></div>`;
       e.sets.forEach((st, si) => {
@@ -639,9 +752,9 @@ function vWorkout() {
     const isLinkedDown = nextEx && e.ss && nextEx.ss === e.ss;
     h += `<div class="ex-actions"><button class="link" data-act="addSet" data-e="${ei}">+ Add set</button><span style="display:flex;gap:16px">
       ${canLink ? `<button class="link-muted" data-act="superset" data-e="${ei}">${isLinkedDown ? 'Unlink superset' : 'Superset with next'}</button>` : ''}
-      <button class="link-muted" data-act="removeSet" data-e="${ei}">${e.sets.length > 1 ? 'Remove set' : 'Remove exercise'}</button></span></div></section>`;
+      <button class="link-muted" data-act="removeSet" data-e="${ei}">${e.sets.length > 1 ? '− Remove set' : 'Remove exercise'}</button></span></div></section>`;
   });
-  h += `<button class="link" style="align-self:center" data-act="pickForWorkout">+ Add exercise</button></main>`;
+  h += `<section style="padding-top:8px" id="finishArea"><button class="btn" data-act="askFinish">Finish workout</button><button class="btn-quiet danger" data-act="askDiscard">Discard workout</button></section></main>`;
   return h;
 }
 
@@ -676,41 +789,6 @@ function summarize(a) {
     if (last && top(good) > top(last)) { upKg += top(good) - top(last); upLifts++; }
   });
   return { sets, volume, unticked, prs, cMin, cKm, upKg, upLifts };
-}
-
-function vFinish() {
-  const a = state.active;
-  if (!a) { ui.screen = 'today'; return vToday(); }
-  const s = summarize(a); const o = ui.finish;
-  const f = findDay(a.dayId);
-  let nextTxt = '', where = '';
-  if (f) {
-    where = esc(f.r.name) + (f.r.mode === 'cycle' ? ' · Day ' + (f.i + 1) : '');
-    if (f.r.mode === 'cycle') {
-      const nd = f.r.days[(f.i + 1) % f.r.days.length];
-      const t = nextTrainingAfter(f.r, f.i);
-      nextTxt = nd.rest ? 'Rest' + (t ? ', then ' + t.day.name : '') : nd.name;
-    } else nextTxt = 'Follows your weekdays';
-  }
-  const prs = s.prs.length ? `<section class="list"><div class="label">Personal records</div>${s.prs.map((p) => `<div class="row"><span>${esc(p.name)}</span><span>${fmtSet(p.set)} <span class="pos small">${esc(p.diff)}</span></span></div>`).join('')}</section>` : '';
-  return `<main class="screen">
-    <header><div class="muted small">${where || 'Workout'}</div><h1 class="title">${esc(a.name)}</h1></header>
-    <section><div class="stats">
-      <div><div class="muted small">Time</div><div class="stat-v">${fmtDur(Date.now() - a.start)}</div></div>
-      <div><div class="muted small">Sets</div><div class="stat-v">${s.sets}</div></div>
-      <div><div class="muted small">Volume</div><div class="stat-v">${fmtNum(Math.round(s.volume))} kg</div></div></div>
-      ${s.cMin ? `<div class="muted small">Cardio: ${fmtCardio({ min: s.cMin, km: s.cKm })}</div>` : ''}
-      ${s.unticked ? `<div class="muted small">${s.unticked} set${s.unticked > 1 ? 's' : ''} with numbers but not ticked won't be saved.</div>` : ''}</section>
-    ${prs}
-    <section class="list"><div class="label">On save</div>
-      ${a.changed && f ? `<div class="row"><span>Save exercise changes to ${esc(f.d.name)}</span>${switchHtml(o.updateRoutine, 'finUpdate', 'Save exercise changes to routine')}</div>` : ''}
-      <div class="row"><div><div>Save to Apple Health</div><div class="sub">Works in the iPhone app</div></div>${switchHtml(o.health, 'finHealth', 'Save to Apple Health')}</div>
-      ${nextTxt ? `<div class="row"><span>Next in split</span><span class="right">${esc(nextTxt)}</span></div>` : ''}</section>
-    <section>
-      <button class="btn" data-act="saveWorkout" ${s.sets ? '' : 'disabled'}>${s.sets ? 'Save workout' : 'Tick at least one set to save'}</button>
-      <button class="btn-quiet" data-act="back">Back to workout</button>
-      ${s.sets ? '' : '<button class="btn-quiet danger" data-act="askDiscard">Discard workout</button>'}
-    </section></main>`;
 }
 
 function vRest() {
@@ -821,7 +899,7 @@ function pickListHtml() {
     if (!xs.length) return;
     h += `<section class="list" aria-label="${esc(m)}"><div class="label">${esc(m)}</div>` + xs.map((x) => added.has(x.id)
       ? `<div class="row"><span class="muted">${esc(x.name)}</span><span class="right">Added</span></div>`
-      : `<button class="row" data-act="pick" data-id="${esc(x.id)}"><span class="row-main">${esc(x.name)}</span>${x.custom ? '<span class="right">Custom</span>' : ''}</button>`).join('') + '</section>';
+      : `<button class="row" data-act="pick" data-id="${esc(x.id)}"><span class="row-main">${esc(x.name)}</span><span class="right">${esc(x.eq || '')}${x.custom ? ' · Custom' : ''}</span></button>`).join('') + '</section>';
   });
   if (!h) h = '<div class="empty">No exercises found.</div>';
   return h;
@@ -908,6 +986,7 @@ function vProgress() {
     <header class="headrow"><h1 class="title">Progress</h1>
       <div class="seg">${[[30, 'Month'], [90, '3 mo'], [365, 'Year']].map(([v, l]) => `<button data-act="period" data-p="${v}" aria-pressed="${p === v}">${l}</button>`).join('')}</div></header>
     <section><div class="label">Estimated strength</div>${head}</section>
+    ${muscleActivityHtml(since, { 30: 'last month', 90: 'last 3 months', 365: 'last year' }[p])}
     ${trainingChartHtml()}
     ${bodySectionHtml()}
     <section class="list"><div class="label">Lifts</div>${rows}</section>
@@ -922,7 +1001,7 @@ function vLift() {
     const last = cs[cs.length - 1]; const sp = last ? speedOf(last) : null;
     const rows = cs.slice(-12).reverse().map((c) => { const v = speedOf(c); return `<div class="row"><span>${new Date(c.t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span><span class="right">${fmtCardio(c)}${v ? ' · ' + fmtNum(Math.round(v * 10) / 10) + ' km/h' : ''}</span></div>`; }).join('') || '<div class="empty">No sessions yet.</div>';
     const useKm = cs.some((c) => c.km);
-    return `<main class="screen">${backHtml('Progress')}
+    return `<main class="screen">${backHtml(backLabel('Progress'))}
       <header><div class="muted small">Cardio</div><h1 class="title">${esc(x ? x.name : 'Cardio')}</h1></header>
       <section><div class="label">Latest</div><div class="big">${last ? fmtCardio(last).split(' · ').slice(0, 2).join(' · ') : '—'}</div>
         ${sp ? `<div class="muted small">${fmtNum(Math.round(sp * 10) / 10)} km/h average</div>` : ''}
@@ -934,7 +1013,7 @@ function vLift() {
   const bw = ss.length && ss[ss.length - 1].b.kg === 0;
   const bestS = bestSet(ss.map((q) => q.b));
   const recent = ss.slice(-12).reverse().map((q) => `<div class="row"><span>${new Date(q.t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span><span class="right">${fmtSet(q.b)}${q.b.kg > 0 ? ' · e1RM ' + fmtE1(q.b) : ''}</span></div>`).join('') || '<div class="empty">No sessions yet.</div>';
-  return `<main class="screen">${backHtml('Progress')}
+  return `<main class="screen">${backHtml(backLabel('Progress'))}
     <header><div class="muted small">${esc(x ? x.muscle : '')}</div><h1 class="title">${esc(x ? x.name : 'Exercise')}</h1></header>
     <section><div class="label">${bw ? 'Best reps' : 'Best estimated 1RM'}</div><div class="big">${!bestS ? '—' : bw ? bestS.reps : fmtE1(bestS)}</div>
       ${chartSvg(ss.slice(-20).map((q) => e1(q.b)), 'Trend for ' + (x ? x.name : 'exercise'))}
@@ -1000,23 +1079,32 @@ function vProfile() {
   const s = state.settings; const H = state.history;
   const now = new Date(); const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
   const hours = Math.round(H.reduce((t, w) => t + (w.end - w.start), 0) / 3600000);
-  const list = (ui.showAll ? H.slice().reverse() : H.slice(-8).reverse()).map((w) => `<button class="row" data-act="openWorkout" data-id="${esc(w.id)}"><span><span class="row-main" style="display:block">${esc(w.name)}</span><span class="sub">${new Date(w.start).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span></span><span class="right">${fmtDur(w.end - w.start)} · ${w.ex.reduce((t, e) => t + e.sets.length, 0)} sets</span></button>`).join('') || '<div class="empty">No workouts yet.</div>';
+  const list = (ui.showAll ? H.slice().reverse() : H.slice(-5).reverse()).map((w) => `<button class="row" data-act="openWorkout" data-id="${esc(w.id)}"><span><span class="row-main" style="display:block">${esc(w.name)}</span><span class="sub">${new Date(w.start).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span></span><span class="right">${fmtDur(w.end - w.start)} · ${w.ex.reduce((t, e) => t + e.sets.length, 0)} sets</span></button>`).join('') || '<div class="empty">No workouts yet.</div>';
   const w = latestWeight(); const bmi = w ? bmiOf(w.kg, state.body.height) : null;
-  return `<main class="screen tabbed">
-    <header class="headrow" style="align-items:center"><h1 class="title">Profile</h1><button class="iconbtn" style="color:var(--muted)" data-act="openSettings" aria-label="Settings">${ICON.gear}</button></header>
-    <section style="flex-direction:row;align-items:center;gap:14px">
-      <span class="avatar" style="width:56px;height:56px;font-size:22px" aria-hidden="true">${s.name ? esc(s.name.charAt(0).toUpperCase()) : ICON.user}</span>
-      <div><button style="font-size:20px;font-weight:600" data-act="editName">${s.name ? esc(s.name) : 'Add your name'}</button><div class="muted small">${esc((activeRoutine() || { name: 'No active split' }).name)}</div></div></section>
+  const favs = exerciseSessions(0).slice(0, 3);
+  return `<main class="screen tabbed" style="padding-top:0">
+    <div class="banner${banner ? ' has' : ''}">${banner ? `<img src="${esc(banner.data)}" alt="">` : ''}
+      <div class="banner-bar"><h1 style="margin:0;font-size:17px;font-weight:600">Profile</h1><button class="iconbtn round" data-act="openSettings" aria-label="Settings">${ICON.gear}</button></div></div>
+    <section class="phead">
+      <div class="headrow" style="align-items:flex-end"><span class="avatar big" aria-hidden="true">${s.name ? esc(s.name.charAt(0).toUpperCase()) : ICON.user}</span>
+        <button class="chip" style="height:36px;padding:0 14px" data-act="editProfile">Edit profile</button></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px"><button style="font-size:24px;font-weight:700;letter-spacing:-.01em" data-act="editName">${s.name ? esc(s.name) : 'Add your name'}</button>${s.country ? flagSvg(s.country, 24) : ''}</div>
+      ${s.username ? `<div class="small" id="handle" style="color:var(--fg)">@${esc(s.username)}</div>` : '<button class="link" style="align-self:flex-start;min-height:28px" data-act="editProfile">+ Choose a username</button>'}
+      <div class="muted small">${s.country && s.country !== 'XX' ? esc(countryName(s.country)) + ' · ' : ''}${esc((activeRoutine() || { name: 'No active split' }).name)}</div>
+      ${s.bio ? `<p class="bio">${esc(s.bio)}</p>` : '<button class="link" style="align-self:flex-start;min-height:32px" data-act="editProfile">+ Add a bio</button>'}
+    </section>
     <section><div class="stats">
+      <div><div class="muted small">Friends</div><div class="stat-v" id="friendCount">${state.friends.length}</div></div>
       <div><div class="muted small">Workouts</div><div class="stat-v">${H.length}</div></div>
-      <div><div class="muted small">This month</div><div class="stat-v">${H.filter((x) => x.start >= monthStart).length}</div></div>
-      <div><div class="muted small">Hours</div><div class="stat-v">${hours}</div></div></div></section>
+      <div><div class="muted small">Hours</div><div class="stat-v">${hours}</div></div></div>
+      ${state.friends.length ? '' : '<div class="muted small">Adding friends comes with the social update.</div>'}</section>
     ${streakLineHtml()}
+    <section class="list"><div class="label">Favourite exercises</div>${favs.length ? favs.map(sessionRow).join('') : '<div class="empty">Your most trained exercises show up here.</div>'}</section>
+    <section class="list"><div class="label">Recent workouts</div>${list}
+      ${H.length > 5 ? `<button class="link" style="align-self:flex-start" data-act="toggleAll">${ui.showAll ? 'Show fewer' : 'Show all ' + H.length}</button>` : ''}</section>
     ${goalChartHtml()}
     <section class="list"><div class="label">Body</div>
       <button class="row" data-act="openBody"><span class="row-main">Weight, height, BMI, body fat</span><span class="right">${w ? fmtNum(w.kg) + ' kg' + (bmi ? ' · BMI ' + fmtNum(Math.round(bmi * 10) / 10) : '') : 'Add'}</span></button></section>
-    <section class="list"><div class="label">Workouts</div>${list}
-      ${H.length > 8 ? `<button class="link" style="align-self:flex-start" data-act="toggleAll">${ui.showAll ? 'Show fewer' : 'Show all ' + H.length}</button>` : ''}</section>
     <section class="list"><div class="label">Your exercises</div>
       <button class="row" data-act="openMyEx"><span class="row-main">Custom exercises</span><span class="right">${state.lib.filter((x) => x.custom && !x.hidden).length}</span></button></section>
     <section class="list"><div class="label">Your data</div>
@@ -1024,6 +1112,56 @@ function vProfile() {
       <button class="row" data-act="importClick"><span class="row-main">Import from Hevy or Strong</span><span class="right">CSV</span></button></section>
   </main>${tabsHtml()}`;
 }
+/* Charts shared by the summary and Progress */
+const SPLIT_COLORS = ['#9DB8F2', '#3A5BB0', '#E0E3EA', '#6F8FD8', '#24376E', '#8E929B', '#4A4E57'];
+function muscleSplit(workouts) {
+  const by = {}; let total = 0;
+  workouts.forEach((w) => w.ex.forEach((e) => { const n = e.sets.filter((x) => !isWarm(x)).length; if (!n) return; const m = (exById(e.exId) || {}).muscle || 'Other'; by[m] = (by[m] || 0) + n; total += n; }));
+  let parts = Object.entries(by).sort((a, b) => b[1] - a[1]).map(([label, n]) => ({ label, n }));
+  if (parts.length > 7) { const rest = parts.slice(6).reduce((t, x) => t + x.n, 0); parts = parts.slice(0, 6).concat([{ label: 'Other', n: rest }]); }
+  return { parts, total };
+}
+function donutHtml(split, label) {
+  const { parts, total } = split; if (!total) return '<div class="empty">No sets logged yet.</div>';
+  const r = 52, C = 2 * Math.PI * r; let off = 0;
+  const arcs = parts.map((p, i) => { const len = p.n / total * C; const gap = parts.length > 1 ? Math.min(2, len / 3) : 0;
+    const el = `<circle cx="70" cy="70" r="${r}" fill="none" stroke="${SPLIT_COLORS[i % SPLIT_COLORS.length]}" stroke-width="18" stroke-dasharray="${Math.max(0, len - gap).toFixed(2)} ${(C - Math.max(0, len - gap)).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 70 70)"/>`; off += len; return el; }).join('');
+  const legend = parts.map((p, i) => `<div class="leg"><span class="ldot" style="background:${SPLIT_COLORS[i % SPLIT_COLORS.length]}"></span><span>${esc(p.label)}</span><span class="muted tnum">${Math.round(p.n / total * 100)}%</span></div>`).join('');
+  return `<div class="donut"><svg viewBox="0 0 140 140" width="140" height="140" role="img" aria-label="${esc(label)}: ${parts.map((p) => p.label + ' ' + Math.round(p.n / total * 100) + '%').join(', ')}">
+    <circle cx="70" cy="70" r="${r}" fill="none" stroke="#1C1E22" stroke-width="18"/>${arcs}
+    <text x="70" y="70" text-anchor="middle" font-size="${String(total).length > 4 ? 22 : 28}" font-weight="700" fill="#F2F3F5">${fmtNum(total)}</text>
+    <text x="70" y="90" text-anchor="middle" font-size="12" fill="#8E929B">sets</text></svg><div class="legend">${legend}</div></div>`;
+}
+// flame with a number inside; the number shrinks with more digits so 1 and 1000 both fit
+function flameHtml(n, label, w = 84) {
+  const t = String(n); const fs = t.length <= 1 ? 30 : t.length === 2 ? 27 : t.length === 3 ? 22 : 17;
+  const fit = t.length >= 4 ? ` textLength="${Math.min(40, t.length * 10)}" lengthAdjust="spacingAndGlyphs"` : '';
+  return `<svg class="flame" viewBox="0 0 64 76" width="${w}" height="${Math.round(w * 76 / 64)}" role="img" aria-label="${esc(label)}">
+    <path d="M33 2c3 10 12 16 18 25 7 10 8 22 3 32-5 10-13 15-22 15S15 69 10 60C5 50 6 39 12 30c2 6 6 9 10 10-2-9 1-18 6-25 2-4 4-8 5-13z" fill="#F08A3C"/>
+    <path d="M32 34c2 6 8 10 10 17 2 8-3 17-10 17s-12-8-10-16c1-5 5-8 7-12 1-2 2-4 3-6z" fill="#F7B267" opacity=".9"/>
+    <text x="32" y="${t.length >= 4 ? 59 : 60}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="#16181C"${fit}>${esc(t)}</text></svg>`;
+}
+function exerciseSessions(since) {
+  const by = {};
+  state.history.forEach((w) => { if (w.start < since) return; w.ex.forEach((e) => { if (e.sets.length) by[e.exId] = (by[e.exId] || 0) + 1; }); });
+  return Object.entries(by).sort((a, b) => b[1] - a[1] || exName(a[0]).localeCompare(exName(b[0])));
+}
+const sessionRow = ([id, n]) => `<button class="row" data-act="openLift" data-id="${esc(id)}"><span><span class="row-main" style="display:block">${esc(exName(id))}</span><span class="sub">${esc(eqOf(id))}</span></span><span style="font-weight:600">${n} session${n === 1 ? '' : 's'}</span></button>`;
+function muscleActivityHtml(since, label) {
+  const split = muscleSplit(state.history.filter((w) => w.start >= since));
+  const top = exerciseSessions(since);
+  return `<section><div class="label">Muscle activity · ${esc(label)}</div>${donutHtml(split, 'Training split, ' + label)}</section>
+    <section class="list"><div class="headrow"><span class="label">Top exercises</span>${top.length > 3 ? '<button class="link" style="min-height:32px" data-act="openAllEx">See more</button>' : ''}</div>
+      ${top.length ? top.slice(0, 3).map(sessionRow).join('') : '<div class="empty">No exercises in this period.</div>'}</section>`;
+}
+function vAllEx() {
+  const p = ui.period; const label = { 30: 'last month', 90: 'last 3 months', 365: 'last year' }[p];
+  const all = exerciseSessions(Date.now() - p * DAY);
+  return `<main class="screen">${backHtml('Progress')}
+    <header><div class="muted small">${label}</div><h1 class="title">Exercises</h1></header>
+    <section class="list">${all.length ? all.map(sessionRow).join('') : '<div class="empty">No exercises in this period.</div>'}</section></main>`;
+}
+
 /* Streak: periods in a row where you hit your goal (or trained at least once without a goal).
    The current week/month only counts once it is hit, but it never breaks the streak before it is over. */
 function streakInfo() {
@@ -1099,6 +1237,8 @@ function vCustomEx() {
     <section><div class="label">How you log it</div>
       <div class="seg"><button data-act="exType" data-t="weight" aria-pressed="${d.type !== 'cardio'}">Weight &amp; reps</button><button data-act="exType" data-t="cardio" aria-pressed="${d.type === 'cardio'}">Cardio (time, km)</button></div></section>
     <section><label class="label" for="exname">Name</label><input id="exname" class="text" maxlength="40" autocomplete="off" data-input="exName" value="${esc(d.name)}" placeholder="e.g. Sam Sulek forearm curl"></section>
+    <section><div class="label">Equipment</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" role="group" aria-label="Equipment">${EQUIPMENT.map((q) => `<button class="chip${d.eq === q ? ' on' : ''}" data-act="exEq" data-q="${esc(q)}" aria-pressed="${d.eq === q}">${esc(q)}</button>`).join('')}</div></section>
     <section><div class="label">Muscle group</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px" role="group" aria-label="Muscle group">${MUSCLES.map((m) => `<button class="chip${d.muscle === m ? ' on' : ''}" data-act="exMuscle" data-m="${esc(m)}" aria-pressed="${d.muscle === m}">${esc(m)}</button>`).join('')}</div></section>
     <section><button class="btn" data-act="saveCustom">${editing ? 'Save changes' : ui.pickFor && prevScreen() === 'picker' ? 'Create and add' : 'Create exercise'}</button>
@@ -1108,7 +1248,7 @@ function vMyEx() {
   const xs = state.lib.filter((x) => x.custom && !x.hidden).sort((a, b) => a.name.localeCompare(b.name));
   return `<main class="screen">${backHtml('Profile')}
     <header class="headrow"><h1 class="title">Your exercises</h1><button class="iconbtn" data-act="newCustom" aria-label="New exercise">${ICON.plus}</button></header>
-    <section class="list">${xs.length ? xs.map((x) => `<button class="row" data-act="editCustom" data-id="${esc(x.id)}"><span class="row-main">${esc(x.name)}</span><span class="right">${esc(x.muscle)}</span></button>`).join('') : '<div class="empty">No custom exercises yet. Tap + to make one.</div>'}</section></main>`;
+    <section class="list">${xs.length ? xs.map((x) => `<button class="row" data-act="editCustom" data-id="${esc(x.id)}"><span class="row-main">${esc(x.name)}</span><span class="right">${esc(x.muscle)} · ${esc(x.eq || 'Other')}</span></button>`).join('') : '<div class="empty">No custom exercises yet. Tap + to make one.</div>'}</section></main>`;
 }
 function vPhoto() {
   const ph = photos.find((x) => x.id === ui.photoId); if (!ph) { ui.screen = 'body'; return vBody(); }
@@ -1120,6 +1260,7 @@ function vPhoto() {
 function vSummary() {
   const S = ui.summary; if (!S) { ui.screen = 'today'; return vToday(); }
   const n = state.settings.name; const g = state.goal;
+  const w = state.history.find((x) => x.id === S.id);
   const goalHitNow = g && S.goalNow >= g.count;
   let head;
   if (S.prs.length >= 2) head = 'Record day';
@@ -1132,13 +1273,40 @@ function vSummary() {
   rows.push(['Weight', S.upLifts ? `+${fmtNum(Math.round(S.upKg * 10) / 10)} kg on ${S.upLifts} lift${S.upLifts > 1 ? 's' : ''}` : 'Same as last time']);
   if (S.volume > 0) rows.push(['Volume', fmtNum(Math.round(S.volume)) + ' kg' + (S.volPct !== null && S.volPct > 0.005 ? ` · +${Math.round(S.volPct * 100)} % vs last time` : '')]);
   if (S.cMin) rows.push(['Cardio', fmtCardio({ min: S.cMin, km: S.cKm })]);
-  rows.push(['Streak', S.streak.n ? fmtStreak(S.streak) + ' in a row' : 'Starts when you hit your ' + S.streak.per + (g ? 'ly goal' : '')]);
   if (g) rows.push([g.per === 'week' ? 'This week' : 'This month', `${S.goalNow} of ${g.count} workouts${goalHitNow ? ' · goal reached' : ''}`]);
-  return `<main class="screen" style="min-height:100dvh;justify-content:center">
-    <header><div class="label">${esc(S.name)} · ${fmtDur(S.dur)} · ${S.sets} sets</div><h1 class="title" id="sumHead" style="font-size:32px">${esc(head)}${n ? ', ' + esc(n) : ''}!</h1></header>
-    <section class="list">${rows.map(([k, v]) => `<div class="row"><span>${k}</span><span class="right${/^\+|new|reached|in a row/.test(v) ? ' pos' : ''}">${esc(v)}</span></div>`).join('')}</section>
+  const unit = S.streak.per + (S.streak.n === 1 ? '' : 's');
+  const exList = w ? w.ex.map((e) => {
+    const best = bestSet(e.sets);
+    const right = isCardio(e.exId) ? fmtCardio(cardioTotal(e.sets)) : e.sets.length + ' set' + (e.sets.length === 1 ? '' : 's') + (best ? ' · best ' + fmtSet(best) : '');
+    return `<div class="row"><span><span style="display:block">${esc(exName(e.exId))}</span><span class="sub">${esc(eqOf(e.exId))}</span></span><span class="right">${esc(right)}</span></div>`;
+  }).join('') : '';
+  return `<main class="screen">
+    <header style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-top:8px">
+      ${flameHtml(S.streak.n, S.streak.n + ' ' + unit + ' streak')}
+      <div class="small muted" id="streakLabel">${S.streak.n} ${unit} in a row</div>
+      <h1 class="title" id="sumHead" style="font-size:30px">${esc(head)}${n ? ', ' + esc(n) : ''}!</h1>
+      <div class="muted small">${esc(S.name)} · ${fmtDur(S.dur)} · ${S.sets} sets</div></header>
+    <section class="list">${rows.map(([k, v]) => `<div class="row"><span>${k}</span><span class="right${/^\+|new|reached/.test(v) ? ' pos' : ''}">${esc(v)}</span></div>`).join('')}</section>
     ${S.prs.length ? `<section class="list"><div class="label">Your records</div>${S.prs.map((q) => `<div class="row"><span>${esc(q.name)}</span><span>${fmtSet(q.set)} <span class="pos small">${esc(q.diff)}</span></span></div>`).join('')}</section>` : ''}
+    ${w ? `<section><div class="label">Training split today</div>${donutHtml(muscleSplit([w]), 'Training split today')}</section>
+    <section class="list"><div class="label">Exercises today</div>${exList}</section>` : ''}
     <section><button class="btn" data-act="summaryDone">Done</button></section></main>`;
+}
+function vEditProfile() {
+  const s = state.settings;
+  return `<main class="screen">${backHtml('Profile')}
+    <header><h1 class="title">Edit profile</h1></header>
+    <section><div class="label">Banner</div>
+      <div class="banner preview${banner ? ' has' : ''}">${banner ? `<img src="${esc(banner.data)}" alt="Your banner">` : '<span class="muted small">No banner yet</span>'}</div>
+      <div style="display:flex;gap:16px"><button class="link" data-act="pickBanner">${banner ? 'Change banner' : '+ Upload banner'}</button>${banner ? '<button class="link-muted" data-act="removeBanner">Remove</button>' : ''}</div></section>
+    <section><label class="label" for="puser">Username</label>
+      <div class="atfield"><span aria-hidden="true">@</span><input id="puser" class="text" maxlength="21" autocapitalize="none" spellcheck="false" data-input="profUser" value="${esc(ui.profUser)}"></div></section>
+    <section><label class="label" for="bio">Bio</label>
+      <textarea id="bio" class="text" style="height:96px;padding:10px 12px;resize:none" maxlength="150" data-input="bioDraft" placeholder="A line about you and your training">${esc(ui.bioDraft)}</textarea>
+      <div class="muted small" style="text-align:right" id="bioCount">${ui.bioDraft.length}/150</div></section>
+    <section><label class="label" for="pcountry">Country</label>
+      <div style="display:flex;align-items:center;gap:10px"><span id="countryFlag" style="display:flex">${flagSvg(ui.profCountry, 30)}</span><select id="pcountry" class="text" style="max-width:none;flex:1" data-change="profCountry">${countryOptions(ui.profCountry)}</select></div></section>
+    <section><button class="btn" data-act="saveProfile">Save</button></section></main>`;
 }
 function vWorkoutDetail() {
   const w = state.history.find((x) => x.id === ui.workoutId);
@@ -1165,6 +1333,8 @@ function vSettings() {
     <section class="list"><div class="label">Training</div>
       <button class="row" data-act="openRest"><span class="row-main">Rest timer</span><span class="right">${s.rest.on ? fmtTime(s.rest.secs) : 'Off'}</span></button>
       <div class="row"><div><div>Apple Health</div><div class="sub">Works in the iPhone app</div></div>${switchHtml(s.health, 'toggleHealth', 'Apple Health')}</div></section>
+    <section class="list"><div class="label">Setup</div>
+      <button class="row" data-act="askRedoSetup"><span><span class="row-main" style="display:block">Go through setup again</span><span class="sub">Name, username, country, body and goal</span></span></button></section>
     <section class="list"><div class="label">Privacy</div>
       <button class="row" data-act="openPrivacy"><span class="row-main">Privacy choices</span></button>
       <button class="row danger" data-act="askDeleteAll">Delete all data</button></section>
@@ -1179,7 +1349,7 @@ function vPrivacy() {
     <section><button class="btn-quiet" data-act="askDemo">Load demo data</button></section></main>`;
 }
 
-const VIEWS = { photo: vPhoto, summary: vSummary, goal: () => vGoal(true), customEx: vCustomEx, myEx: vMyEx, body: vBody, profile: vProfile, workoutDetail: vWorkoutDetail, welcome: vOnboarding, name: () => vName(true), today: vToday, workout: vWorkout, finish: vFinish, rest: vRest, routines: vRoutines, split: vSplit, day: vDay, picker: vPicker, progress: vProgress, lift: vLift, settings: vSettings, privacy: vPrivacy };
+const VIEWS = { editProfile: vEditProfile, allEx: vAllEx, photo: vPhoto, summary: vSummary, goal: () => vGoal(true), customEx: vCustomEx, myEx: vMyEx, body: vBody, profile: vProfile, workoutDetail: vWorkoutDetail, welcome: vOnboarding, name: () => vName(true), today: vToday, workout: vWorkout, rest: vRest, routines: vRoutines, split: vSplit, day: vDay, picker: vPicker, progress: vProgress, lift: vLift, settings: vSettings, privacy: vPrivacy };
 function render() {
   $app.innerHTML = (VIEWS[ui.screen] || vToday)();
   updateRestBar();
@@ -1227,7 +1397,7 @@ function toggleSet(ei, si) {
     if (incRaw !== '' && (inc === null || inc > 40)) bad.push('inc');
     if (bad.length) { markErr(ei, si, bad); toast(bad.includes('min') ? 'Enter the time in minutes (up to 600)' : bad.includes('km') ? 'Distance must be 0–200 km' : 'Incline must be 0–40 %'); return; }
     s.min = String(min); s.km = km === null ? '' : String(km); s.inc = inc === null ? '' : String(inc); s.done = true;
-    save(true); render(); return; // no rest timer after cardio
+    save(true); render(); advanceIfDone(ei); return; // no rest timer after cardio
   }
   const kg = parseNum(pick('kg')); const reps = parseNum(pick('reps'));
   const kgOk = kg !== null && kg <= 1000;
@@ -1242,7 +1412,18 @@ function toggleSet(ei, si) {
   const nextInSuperset = e.ss && a.ex[ei + 1] && a.ex[ei + 1].ss === e.ss; // in a superset you rest after the last exercise
   if (state.settings.rest.on && !nextInSuperset) { const r = restFor(e.exId); a.restEnd = Date.now() + r * 1000; a.restDur = r; }
   else if (nextInSuperset) a.restEnd = null;
-  initAudio(); save(true); render();
+  initAudio(); save(true); render(); advanceIfDone(ei);
+}
+// when every set of an exercise is ticked, its card fades and the next unfinished exercise scrolls into view
+function advanceIfDone(ei) {
+  const a = state.active; if (!a || !a.ex[ei].sets.every((x) => x.done)) return;
+  const order = [...a.ex.keys()].slice(ei + 1).concat([...a.ex.keys()].slice(0, ei));
+  const next = order.find((i) => !a.ex[i].sets.every((x) => x.done));
+  requestAnimationFrame(() => {
+    const el = document.getElementById(next === undefined ? 'finishArea' : 'ex-' + next);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: next === undefined ? 'center' : 'start' });
+  });
+  if (next === undefined) toast('All exercises done. Finish when you are ready.');
 }
 function updateRestBar() {
   const bar = document.getElementById('restbar'); if (!bar) return;
@@ -1257,6 +1438,7 @@ function saveWorkout() {
   const a = state.active; if (!a) return;
   const ex = a.ex.map((e) => ({ exId: e.exId, sets: cleanSets(e) })).filter((e) => e.sets.length);
   if (!ex.length) { toast('Tick at least one set first'); return; }
+  if (!ui.finish) ui.finish = { updateRoutine: true };
   const sum = summarize(a);
   // volume compared with the last time you did this day (or a workout with the same name)
   const prevSame = [...state.history].reverse().find((w) => (a.dayId && w.dayId === a.dayId) || w.name === a.name);
@@ -1270,7 +1452,8 @@ function saveWorkout() {
   }
   state.active = null;
   save(true);
-  ui.summary = { name: a.name, dur: end - a.start, ...sum, volPct: prevVol > 0 && sum.volume > 0 ? (sum.volume / prevVol - 1) : null, streak: streakInfo(), goalNow: state.goal ? goalPeriods().slice(-1)[0].n : null, pick: Math.floor(Math.random() * 4) };
+  ui.finish = null;
+  ui.summary = { id: a.id, name: a.name, dur: end - a.start, ...sum, volPct: prevVol > 0 && sum.volume > 0 ? (sum.volume / prevVol - 1) : null, streak: streakInfo(), goalNow: state.goal ? goalPeriods().slice(-1)[0].n : null, pick: Math.floor(Math.random() * 4) };
   ui.stack = []; ui.screen = 'summary'; render(); window.scrollTo(0, 0);
 }
 function discardWorkout() {
@@ -1364,6 +1547,7 @@ async function importCsv(file) {
 
 /* ---------- progress photos: downscaled, kept in IndexedDB on this device only ---------- */
 let photos = [];
+let banner = null; // { id: 'banner', data } kept in the same on-device store
 const PDB = {
   db: null,
   open() {
@@ -1381,8 +1565,8 @@ const PDB = {
   clear() { return this.run('readwrite', (st) => st.clear()); }
 };
 async function loadPhotos() {
-  try { photos = ((await PDB.all()) || []).sort((a, b) => a.t - b.t); } catch (e) { console.warn('Photos unavailable', e); photos = []; }
-  if (ui.screen === 'body' || ui.screen === 'photo') render();
+  try { const all = (await PDB.all()) || []; banner = all.find((x) => x.id === 'banner') || null; photos = all.filter((x) => x.id !== 'banner').sort((a, b) => a.t - b.t); } catch (e) { console.warn('Photos unavailable', e); photos = []; }
+  if (['body', 'photo', 'profile', 'editProfile'].includes(ui.screen)) render();
 }
 function downscale(file, max = 1080) {
   return new Promise((res, rej) => {
@@ -1395,6 +1579,12 @@ function downscale(file, max = 1080) {
     img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Not an image')); };
     img.src = url;
   });
+}
+async function setBanner(file) {
+  if (!file) return;
+  if (!/^image\//.test(file.type) || file.size > 25 * 1024 * 1024) { toast('Choose an image under 25 MB'); return; }
+  banner = { id: 'banner', t: Date.now(), data: await downscale(file, 1200) };
+  await PDB.put(banner); render(); toast('Banner updated');
 }
 async function addPhoto(file) {
   if (!file) return;
@@ -1416,10 +1606,16 @@ const A = {
     const n = ui.nameDraft.replace(/[<>]/g, '').trim().slice(0, 30);
     const editing = ui.screen === 'name';
     if (!n && !editing) { toast('Enter your first name, or tap Skip'); focusInput('firstname'); return; }
+    if (!editing) {
+      const u = cleanUser(ui.userDraft || suggestUser(n)); const err = userError(u);
+      if (err) { toast(err); const el = document.getElementById('username'); if (el) el.classList.add('err'); focusInput('username'); return; }
+      state.settings.username = u;
+    }
     state.settings.name = n;
+    if (!editing) state.settings.country = ui.countryDraft || '';
     if (editing) { save(true); back(); toast(n ? 'Name saved' : 'Name removed'); } else { state.settings.onbStep = 1; ui.body = null; save(true); render(); }
   },
-  skipName() { A.onbSkip(); },
+  skipName() { if (ui.countryDraft) state.settings.country = ui.countryDraft; A.onbSkip(); },
   onbSkip() {
     const st = state.settings.onbStep || 0;
     if (st >= 2) { state.settings.onboarded = true; ui.goalDraft = null; save(true); ui.stack = []; ui.screen = 'today'; render(); return; }
@@ -1449,19 +1645,20 @@ const A = {
   newCustom() {
     const fromPicker = ui.screen === 'picker';
     ui.editExId = null;
-    ui.exDraft = { name: fromPicker ? ui.q.trim().slice(0, 40) : '', muscle: fromPicker && ui.muscle !== 'All' ? ui.muscle : 'Other', type: fromPicker && ui.muscle === 'Cardio' ? 'cardio' : 'weight' };
+    ui.exDraft = { name: fromPicker ? ui.q.trim().slice(0, 40) : '', muscle: fromPicker && ui.muscle !== 'All' ? ui.muscle : 'Other', type: fromPicker && ui.muscle === 'Cardio' ? 'cardio' : 'weight', eq: fromPicker && ui.muscle === 'Cardio' ? 'Cardio machine' : 'Other' };
     if (!fromPicker) ui.pickFor = null;
     go('customEx'); focusInput('exname');
   },
-  editCustom(d) { const x = exById(d.id); if (!x) return; ui.editExId = x.id; ui.pickFor = null; ui.exDraft = { name: x.name, muscle: x.muscle, type: x.type || 'weight' }; go('customEx'); },
-  exType(d) { ui.exDraft.type = d.t; if (d.t === 'cardio') ui.exDraft.muscle = 'Cardio'; else if (ui.exDraft.muscle === 'Cardio') ui.exDraft.muscle = 'Other'; render(); },
+  editCustom(d) { const x = exById(d.id); if (!x) return; ui.editExId = x.id; ui.pickFor = null; ui.exDraft = { name: x.name, muscle: x.muscle, type: x.type || 'weight', eq: x.eq || 'Other' }; go('customEx'); },
+  exEq(d) { ui.exDraft.eq = d.q; render(); },
+  exType(d) { ui.exDraft.type = d.t; if (d.t === 'cardio') { ui.exDraft.muscle = 'Cardio'; if (!['Cardio machine', 'Outdoor'].includes(ui.exDraft.eq)) ui.exDraft.eq = 'Cardio machine'; } else if (ui.exDraft.muscle === 'Cardio') ui.exDraft.muscle = 'Other'; render(); },
   exMuscle(d) { ui.exDraft.muscle = d.m; render(); },
   saveCustom() {
     const name = ui.exDraft.name.replace(/[<>]/g, '').trim().slice(0, 40);
     if (!name) { toast('Give the exercise a name'); focusInput('exname'); return; }
     if (state.lib.some((x) => !x.hidden && x.id !== ui.editExId && x.name.toLowerCase() === name.toLowerCase())) { toast('You already have an exercise called ' + name); focusInput('exname'); return; }
-    if (ui.editExId) { const x = exById(ui.editExId); x.name = name; x.muscle = ui.exDraft.muscle; if (!state.history.some((w) => w.ex.some((e) => e.exId === x.id))) x.type = ui.exDraft.type; ui.editExId = null; save(true); back(); toast('Exercise updated'); return; }
-    const x = { id: 'c_' + uid(), name, muscle: ui.exDraft.muscle, type: ui.exDraft.type === 'cardio' ? 'cardio' : 'weight', custom: true }; state.lib.push(x);
+    if (ui.editExId) { const x = exById(ui.editExId); x.name = name; x.muscle = ui.exDraft.muscle; x.eq = ui.exDraft.eq; if (!state.history.some((w) => w.ex.some((e) => e.exId === x.id))) x.type = ui.exDraft.type; ui.editExId = null; save(true); back(); toast('Exercise updated'); return; }
+    const x = { id: 'c_' + uid(), name, muscle: ui.exDraft.muscle, type: ui.exDraft.type === 'cardio' ? 'cardio' : 'weight', eq: ui.exDraft.eq || 'Other', custom: true }; state.lib.push(x);
     if (prevScreen() === 'picker' && ui.pickFor) { ui.stack.pop(); addExercise(x.id); return; } // back past the picker to the day/workout
     save(true); back(); toast(name + ' created');
   },
@@ -1475,6 +1672,21 @@ const A = {
   editName() { ui.nameDraft = state.settings.name; go('name'); focusInput('firstname'); },
   // profile + settings
   openSettings: () => go('settings'),
+  askRedoSetup() {
+    confirmSheet({ title: 'Go through setup again?', text: 'You step through name, username, country, body and goal again, with your current answers filled in. Workouts, splits and photos stay as they are.', ok: 'Start setup', onOk() {
+      const st = state.settings;
+      ui.nameDraft = st.name || ''; ui.userDraft = st.username || ''; ui.userTouched = !!st.username; ui.countryDraft = st.country || guessCountry();
+      ui.body = null; ui.goalDraft = null;
+      st.onboarded = false; st.onbStep = 0; save(true);
+      ui.stack = []; ui.screen = 'welcome'; render(); window.scrollTo(0, 0);
+    } });
+  },
+  editProfile() { ui.profUser = state.settings.username || ''; ui.bioDraft = state.settings.bio || ''; ui.profCountry = state.settings.country || ''; go('editProfile'); },
+  pickBanner() { const f = document.getElementById('bannerFile'); f.value = ''; f.click(); },
+  removeBanner() { banner = null; PDB.del('banner').catch(() => {}); render(); toast('Banner removed'); },
+  saveProfile() {
+    if (ui.profUser) { const e = userError(ui.profUser); if (e) { toast(e); document.getElementById('puser').classList.add('err'); return; } }
+    state.settings.username = ui.profUser; state.settings.bio = ui.bioDraft.replace(/[<>]/g, '').trim().slice(0, 150); state.settings.country = ui.profCountry; save(true); back(); toast('Profile saved'); },
   openWorkout: (d) => go('workoutDetail', { workoutId: d.id }),
   toggleAll() { ui.showAll = !ui.showAll; render(); },
   askDeleteWorkout() {
@@ -1521,6 +1733,7 @@ const A = {
   skipTo(d) { const r = activeRoutine(); if (!r) return; r.next = Number(d.i); save(true); render(); },
   // splits
   newRoutine() {
+    ui.splitMenu = false;
     const r = newRoutine('New split', 'cycle'); state.routines.push(r);
     ui.creatingId = r.id; ui.makeActive = true;
     save(true); go('split', { routineId: r.id }); focusInput('rname');
@@ -1541,7 +1754,10 @@ const A = {
     if (r.days.length) confirmSheet({ title: 'Discard this split?', text: 'The days you added to it will be deleted.', ok: 'Discard split', danger: true, onOk: drop });
     else drop();
   },
-  openRoutine: (d) => go('split', { routineId: d.id }),
+  openRoutine: (d) => { ui.splitMenu = false; go('split', { routineId: d.id }); },
+  splitMenu() { ui.splitMenu = !ui.splitMenu; render(); const f = document.querySelector('.menu .mitem'); if (f) f.focus(); },
+  pickSplit(d) { ui.splitMenu = false; const changed = state.activeRoutineId !== d.id; state.activeRoutineId = d.id; save(true); render(); if (changed) toast((routineById(d.id) || {}).name + ' is now active'); },
+  editSplits() { ui.splitMenu = false; tab('routines'); },
   setActive(d) { state.activeRoutineId = d.id; save(true); render(); toast('Active split changed'); },
   mode(d) { const r = routineById(ui.routineId); if (!r) return; r.mode = d.m; save(true); render(); },
   askDeleteRoutine() {
@@ -1618,14 +1834,28 @@ const A = {
     if (nx === null) delete per[d.id]; else per[d.id] = nx; save(true); render();
   },
   askDiscard() { confirmSheet({ title: 'Discard this workout?', text: 'All sets you logged in this workout will be deleted. Your split does not move on.', ok: 'Discard workout', danger: true, onOk: discardWorkout }); },
-  goFinish() { ui.finish = { updateRoutine: true, health: state.settings.health }; go('finish'); },
-  finUpdate() { ui.finish.updateRoutine = !ui.finish.updateRoutine; render(); },
-  finHealth() { ui.finish.health = !ui.finish.health; render(); },
-  saveWorkout: () => saveWorkout(),
+  askFinish() {
+    const a = state.active; if (!a) return;
+    if (!ui.finish) ui.finish = { updateRoutine: true };
+    const sm = summarize(a); const f = findDay(a.dayId);
+    let total = 0; a.ex.forEach((e) => { total += e.sets.length; });
+    ui.modal = { onOk: null };
+    $modal.innerHTML = `<div class="backdrop" data-act="modalCancel"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt" data-act="noop">
+      <h2 id="mt">Finish workout?</h2>
+      <p>${sm.sets} of ${total} sets done${sm.unticked ? `. ${sm.unticked} set${sm.unticked > 1 ? 's' : ''} with numbers but not ticked won't be saved` : ''}.</p>
+      ${a.changed && f ? `<div class="row" style="border:0"><span>Save exercise changes to ${esc(f.d.name)}</span>${switchHtml(ui.finish.updateRoutine, 'finUpdate', 'Save exercise changes to routine')}</div>` : ''}
+      <button class="btn" data-act="saveWorkout" ${sm.sets ? '' : 'disabled'}>${sm.sets ? 'Finish workout' : 'Tick at least one set to finish'}</button>
+      <button class="btn-quiet danger" data-act="askDiscard">Discard workout</button>
+      <button class="btn-quiet" data-act="modalCancel">Keep training</button></div></div>`;
+    $modal.querySelector('.btn').focus();
+  },
+  finUpdate() { ui.finish.updateRoutine = !ui.finish.updateRoutine; A.askFinish(); },
+  saveWorkout() { closeModal(); saveWorkout(); },
   summaryDone() { ui.summary = null; ui.stack = []; ui.screen = 'today'; render(); window.scrollTo(0, 0); },
   // progress
   period(d) { ui.period = Number(d.p); render(); },
   metric(d) { ui.metric = d.m; render(); },
+  openAllEx: () => go('allEx'),
   addPhoto() { const f = document.getElementById('photoFile'); f.value = ''; f.click(); },
   openPhoto: (d) => go('photo', { photoId: d.id }),
   askDeletePhoto() {
@@ -1644,7 +1874,7 @@ const A = {
   askDeleteAll() {
     confirmSheet({ title: 'Delete all data?', text: 'Your name, body stats, splits, every workout and all settings are removed from this device. This cannot be undone.', ok: 'Delete everything', danger: true, onOk() {
       try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
-      PDB.clear().catch(() => {}); photos = [];
+      PDB.clear().catch(() => {}); photos = []; banner = null; ui.countryDraft = guessCountry(); ui.userDraft = ''; ui.userTouched = false; ui.nameDraft = '';
       state = baseState(); save(true); ui.stack = []; ui.screen = 'today'; ui.nameDraft = ''; render(); toast('All data deleted');
     } });
   },
@@ -1663,7 +1893,14 @@ const INPUT = {
   reps(el) { const s = state.active && state.active.ex[el.dataset.e].sets[el.dataset.s]; if (!s) return; s.reps = el.value; el.classList.remove('err'); save(); },
   dayName(el) { const d = dayById(ui.dayId); if (d) { d.name = el.value.slice(0, 40); save(); } },
   routineName(el) { const r = routineById(ui.routineId); if (r) { r.name = el.value.slice(0, 40); save(); } },
-  nameDraft(el) { ui.nameDraft = el.value; },
+  nameDraft(el) {
+    ui.nameDraft = el.value;
+    const u = document.getElementById('username'); // suggest a username from the first name until the user types their own
+    if (u && !ui.userTouched) { ui.userDraft = suggestUser(el.value); u.value = ui.userDraft; }
+  },
+  userDraft(el) { ui.userTouched = true; ui.userDraft = cleanUser(el.value); el.classList.remove('err'); const h = document.getElementById('userHint'); if (h) { const e = ui.userDraft ? userError(ui.userDraft) : ''; h.textContent = e || 'Friends will find and add you by this name. Letters, numbers, dots and underscores.'; h.className = 'small ' + (e ? 'danger' : 'muted'); } },
+  profUser(el) { ui.profUser = cleanUser(el.value); el.classList.remove('err'); },
+  bioDraft(el) { ui.bioDraft = el.value.slice(0, 150); const c = document.getElementById('bioCount'); if (c) c.textContent = ui.bioDraft.length + '/150'; },
   exName(el) { if (ui.exDraft) ui.exDraft.name = el.value; },
   bodyField(el) { if (!ui.body) return; ui.body[el.dataset.f] = el.value; el.classList.remove('err'); const r = document.getElementById('bodyResults'); if (r) r.innerHTML = bodyResultsHtml(); },
   search(el) { ui.q = el.value; document.getElementById('picklist').innerHTML = pickListHtml(); }
@@ -1672,11 +1909,15 @@ const CHANGE = {
   dayNameDone(el) { const d = dayById(ui.dayId); if (d && !d.name.trim()) { d.name = 'Untitled day'; el.value = d.name; } save(true); },
   routineNameDone(el) { const r = routineById(ui.routineId); if (r && !r.name.trim()) { r.name = 'Untitled split'; el.value = r.name; } save(true); },
   weekday(el) { const r = routineById(ui.routineId); if (!r) return; r.week[Number(el.dataset.w)] = el.value || null; save(true); toast(el.value ? 'Saved' : 'Set to rest'); },
+  banner(el) { setBanner(el.files && el.files[0]).catch((e) => { console.error(e); toast('Could not use that image'); }); },
+  countryDraft(el) { ui.countryDraft = el.value; const f = document.getElementById('countryFlag'); if (f) f.innerHTML = flagSvg(el.value, 30); },
+  profCountry(el) { ui.profCountry = el.value; const f = document.getElementById('countryFlag'); if (f) f.innerHTML = flagSvg(el.value, 30); },
   photo(el) { addPhoto(el.files && el.files[0]).catch((e) => { console.error(e); toast('Could not add that photo'); }); },
   import(el) { importCsv(el.files && el.files[0]).catch((e) => { console.error(e); toast('Could not read that file'); }); }
 };
 
 document.addEventListener('click', (ev) => {
+  if (ui.splitMenu && !ev.target.closest('.splitwrap')) { ui.splitMenu = false; if (!ev.target.closest('[data-act]')) { render(); return; } }
   const el = ev.target.closest('[data-act]');
   if (!el || el.disabled) return;
   const fn = A[el.dataset.act];
@@ -1686,6 +1927,7 @@ document.addEventListener('input', (ev) => { const k = ev.target.dataset && ev.t
 document.addEventListener('change', (ev) => { const k = ev.target.dataset && ev.target.dataset.change; if (k && CHANGE[k]) CHANGE[k](ev.target); });
 document.addEventListener('keydown', (ev) => {
   if (ev.key === 'Escape' && ui.modal) closeModal();
+  else if (ev.key === 'Escape' && ui.splitMenu) { ui.splitMenu = false; render(); const b = document.querySelector('.splitbtn'); if (b) b.focus(); }
   if (ev.key === 'Enter' && ev.target.id === 'firstname') { ev.preventDefault(); A.saveName(); }
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) save(true); });
