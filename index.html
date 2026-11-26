@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0A0B0D">
 <title>Træningsapp</title>
-<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -113,6 +113,10 @@ select{background:var(--field);border:0;border-radius:8px;height:36px;padding:0 
 .restrow .v{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;margin-left:8px}
 .chip{height:36px;padding:0 10px;border-radius:8px;background:var(--field);font-size:14px;text-align:center;white-space:nowrap;flex:none}
 .chip.on{background:var(--accent);color:#fff}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cald{height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:14px;color:var(--faint);justify-self:center;width:36px}
+.iconbtn:disabled{opacity:.3}
+.cald.on{background:var(--accent);color:#fff;font-weight:600}.cald.today{box-shadow:inset 0 0 0 1px var(--accent-text)}
 .track{height:2px;background:var(--line)}.fill{height:2px;background:var(--focus);width:0}
 .wk-body{padding:16px 16px calc(env(safe-area-inset-bottom) + 40px);display:flex;flex-direction:column;gap:12px}
 .ex{gap:4px}
@@ -560,7 +564,7 @@ function back() {
   ui.screen = p.screen; ui.routineId = p.routineId; ui.dayId = p.dayId; ui.liftId = p.liftId; ui.workoutId = p.workoutId; ui.photoId = p.photoId; render(); window.scrollTo(0, p.y || 0);
 }
 const prevScreen = () => (ui.stack.length ? ui.stack[ui.stack.length - 1].screen : '');
-const backLabel = (fallback) => ({ allEx: 'Exercises', picker: 'Back', myEx: 'Your exercises', today: 'Today', routines: 'Routines', progress: 'Progress', profile: 'Profile', settings: 'Settings', split: (routineById(ui.routineId) || {}).name || 'Split' }[prevScreen()] || fallback);
+const backLabel = (fallback) => ({ picker: 'Back', myEx: 'Your exercises', today: 'Today', routines: 'Routines', progress: 'Progress', profile: 'Profile', settings: 'Settings', split: (routineById(ui.routineId) || {}).name || 'Split' }[prevScreen()] || fallback);
 
 /* ---------- body: BMI + body fat ---------- */
 function latestWeight() { const w = state.body.weights; return w.length ? w[w.length - 1] : null; }
@@ -1005,25 +1009,6 @@ function chartSvg(values, label) {
   return `<svg width="100%" height="96" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="${esc(label)}"><line x1="0" y1="${h - 1}" x2="${w}" y2="${h - 1}" stroke="#1C1E22"/><polyline fill="none" stroke="#6F8FD8" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke" points="${pts}"/></svg>`;
 }
 const cardioTotal = (sets) => ({ min: sets.reduce((t, s) => t + (s.min || 0), 0), km: sets.reduce((t, s) => t + (s.km || 0), 0) || null });
-function trainingChartHtml() {
-  const m = ui.metric || 'volume';
-  const mon = startOfDay(Date.now() - todayIndex() * DAY); const W = [];
-  for (let k = 11; k >= 0; k--) {
-    const s = mon - k * 7 * DAY, e = s + 7 * DAY; const ws = state.history.filter((w) => w.start >= s && w.start < e);
-    const v = m === 'volume' ? ws.reduce((t, w) => t + w.ex.reduce((u, x) => u + volOf(x.sets), 0), 0)
-      : m === 'reps' ? ws.reduce((t, w) => t + w.ex.reduce((u, x) => u + x.sets.reduce((q, st) => q + (isWeightSet(st) && !isWarm(st) ? st.reps : 0), 0), 0), 0)
-      : ws.reduce((t, w) => t + (w.end - w.start), 0) / 3600000;
-    W.push({ v, label: k === 0 ? 'Now' : new Date(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric' }).replace('/', '.') });
-  }
-  const total = W.reduce((t, x) => t + x.v, 0); const max = Math.max(...W.map((x) => x.v)) || 1;
-  const short = (v) => (m === 'time' ? fmtNum(Math.round(v * 10) / 10) + 'h' : v >= 1000 ? fmtNum(Math.round(v / 100) / 10) + 'k' : String(Math.round(v)));
-  const big = m === 'volume' ? fmtNum(Math.round(total)) + ' kg' : m === 'reps' ? fmtNum(Math.round(total)) + ' reps' : fmtNum(Math.round(total * 10) / 10) + ' h';
-  const unit = { volume: 'Volume (kg lifted, warm-ups excluded)', reps: 'Reps', time: 'Training time' }[m];
-  return `<section><div class="label">Training · last 12 weeks</div>
-    <div class="seg">${[['volume', 'Volume'], ['reps', 'Reps'], ['time', 'Time']].map(([v, l]) => `<button data-act="metric" data-m="${v}" aria-pressed="${m === v}">${l}</button>`).join('')}</div>
-    <div style="display:flex;align-items:baseline;gap:8px;margin-top:4px"><span class="big" id="trainTotal">${big}</span><span class="muted small">in 12 weeks</span></div>
-    <div class="gchart" role="img" aria-label="${esc(unit)} per week, last 12 weeks">${W.map((x, i) => `<div class="gcol"><span class="gval">${x.v ? short(x.v) : ''}</span><div class="gtrack"><div class="gbar hit${i === 11 ? ' now' : ''}" style="height:${Math.round(x.v / max * 100)}%"></div></div><span class="glab">${x.label}</span></div>`).join('')}</div></section>`;
-}
 function strength(days) {
   const now = Date.now(), since = now - days * DAY;
   const per = {};
@@ -1069,13 +1054,11 @@ function vProgress() {
   return `<main class="screen tabbed">
     <header class="headrow"><h1 class="title">Progress</h1>
       <div class="seg">${[[30, 'Month'], [90, '3 mo'], [365, 'Year']].map(([v, l]) => `<button data-act="period" data-p="${v}" aria-pressed="${p === v}">${l}</button>`).join('')}</div></header>
+    ${calendarHtml()}
     <section><div class="label">Estimated strength</div>${head}</section>
-    ${weeklySetsHtml()}
-    ${muscleActivityHtml(since, { 30: 'last month', 90: 'last 3 months', 365: 'last year' }[p])}
-    ${trainingChartHtml()}
-    ${bodySectionHtml()}
-    <section class="list"><div class="label">Lifts</div>${rows}</section>
-    ${crow ? `<section class="list"><div class="label">Cardio</div>${crow}</section>` : ''}
+    <button class="link" style="align-self:flex-start" data-act="moreStats" aria-expanded="${!!ui.moreStats}">${ui.moreStats ? 'Fewer stats' : 'More stats'}</button>
+    ${ui.moreStats ? weeklySetsHtml() + muscleActivityHtml(since, { 30: 'last month', 90: 'last 3 months', 365: 'last year' }[p]) : ''}
+    <section class="list"><div class="label">Exercises</div>${rows}${crow}</section>
   </main>${tabsHtml()}`;
 }
 function vLift() {
@@ -1165,7 +1148,6 @@ function vProfile() {
   const now = new Date(); const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
   const hours = Math.round(H.reduce((t, w) => t + (w.end - w.start), 0) / 3600000);
   const list = (ui.showAll ? H.slice().reverse() : H.slice(-5).reverse()).map((w) => `<button class="row" data-act="openWorkout" data-id="${esc(w.id)}"><span><span class="row-main" style="display:block">${esc(w.name)}</span><span class="sub">${new Date(w.start).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span></span><span class="right">${fmtDur(w.end - w.start)} · ${w.ex.reduce((t, e) => t + e.sets.length, 0)} sets</span></button>`).join('') || '<div class="empty">No workouts yet.</div>';
-  const w = latestWeight(); const bmi = w ? bmiOf(w.kg, state.body.height) : null;
   const favs = exerciseSessions(0).slice(0, 3);
   return `<main class="screen tabbed" style="padding-top:0">
     <div class="banner${banner ? ' has' : ''}">${banner ? `<img src="${esc(banner.data)}" alt="">` : ''}
@@ -1183,15 +1165,13 @@ function vProfile() {
       <div><div class="muted small">Workouts</div><div class="stat-v">${H.length}</div></div>
       <div><div class="muted small">Hours</div><div class="stat-v">${hours}</div></div></div>
       ${state.friends.length ? '' : '<div class="muted small">Adding friends comes with the social update.</div>'}</section>
-    ${streakLineHtml()}
     ${achievementsHtml()}
     ${recapRowsHtml()}
     <section class="list"><div class="label">Favourite exercises</div>${favs.length ? favs.map(sessionRow).join('') : '<div class="empty">Your most trained exercises show up here.</div>'}</section>
     <section class="list"><div class="label">Recent workouts</div>${list}
       ${H.length > 5 ? `<button class="link" style="align-self:flex-start" data-act="toggleAll">${ui.showAll ? 'Show fewer' : 'Show all ' + H.length}</button>` : ''}</section>
     ${goalChartHtml()}
-    <section class="list"><div class="label">Body</div>
-      <button class="row" data-act="openBody"><span class="row-main">Weight, height, BMI, body fat</span><span class="right">${w ? fmtNum(w.kg) + ' kg' + (bmi ? ' · BMI ' + fmtNum(Math.round(bmi * 10) / 10) : '') : 'Add'}</span></button></section>
+    ${bodySectionHtml()}
     <section class="list"><div class="label">Your exercises</div>
       <button class="row" data-act="openMyEx"><span class="row-main">Custom exercises</span><span class="right">${state.lib.filter((x) => x.custom && !x.hidden).length}</span></button></section>
     <section class="list"><div class="label">Your data</div>
@@ -1247,19 +1227,32 @@ function weeklySetsHtml() {
       <span class="tnum" style="width:36px;text-align:right;flex:none${r.v >= 10 ? ';color:var(--accent-text)' : ''}" aria-label="${fmtNum(Math.round(r.v * 10) / 10)} sets per week">${fmtNum(Math.round(r.v * 10) / 10)}</span></div>`).join('')}
     <div class="muted small" style="padding-top:8px">The line marks 10 sets. In a 2017 meta-analysis (Schoenfeld, Ogborn &amp; Krieger) 10 or more hard sets per muscle per week gave the most growth.</div></section>`;
 }
+const dayKey = (t) => new Date(t).toDateString();
+function calendarHtml() {
+  const off = ui.calOff || 0; const now = new Date();
+  const first = new Date(now.getFullYear(), now.getMonth() + off, 1);
+  const n = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  const trained = new Set(state.history.map((w) => dayKey(w.start)));
+  const today = dayKey(Date.now());
+  const pad = (first.getDay() + 6) % 7; // Monday first
+  let cells = '<span></span>'.repeat(pad);
+  for (let d = 1; d <= n; d++) {
+    const t = new Date(first.getFullYear(), first.getMonth(), d); const k = dayKey(t);
+    const cls = 'cald' + (k === today ? ' today' : '');
+    cells += trained.has(k)
+      ? `<button class="${cls} on" data-act="calDay" data-t="${t.getTime()}" aria-label="${t.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}, trained">${d}</button>`
+      : `<span class="${cls}">${d}</span>`;
+  }
+  const count = state.history.filter((w) => { const s = new Date(w.start); return s.getFullYear() === first.getFullYear() && s.getMonth() === first.getMonth(); }).length;
+  return `<section><div class="headrow"><span class="label">Training days · ${count} workout${count === 1 ? '' : 's'}</span>
+      <span style="display:flex;align-items:center"><button class="iconbtn" data-act="calMove" data-d="-1" aria-label="Previous month">‹</button>
+      <span class="small" style="min-width:84px;text-align:center">${first.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span>
+      <button class="iconbtn" data-act="calMove" data-d="1" aria-label="Next month"${off >= 0 ? ' disabled' : ''}>›</button></span></div>
+    <div class="cal">${['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((x) => `<span class="muted small">${x}</span>`).join('')}${cells}</div></section>`;
+}
 function muscleActivityHtml(since, label) {
   const split = muscleSplit(state.history.filter((w) => w.start >= since));
-  const top = exerciseSessions(since);
-  return `<section><div class="label">Muscle activity · ${esc(label)}</div>${donutHtml(split, 'Training split, ' + label)}</section>
-    <section class="list"><div class="headrow"><span class="label">Top exercises</span>${top.length > 3 ? '<button class="link" style="min-height:32px" data-act="openAllEx">See more</button>' : ''}</div>
-      ${top.length ? top.slice(0, 3).map(sessionRow).join('') : '<div class="empty">No exercises in this period.</div>'}</section>`;
-}
-function vAllEx() {
-  const p = ui.period; const label = { 30: 'last month', 90: 'last 3 months', 365: 'last year' }[p];
-  const all = exerciseSessions(Date.now() - p * DAY);
-  return `<main class="screen">${backHtml('Progress')}
-    <header><div class="muted small">${label}</div><h1 class="title">Exercises</h1></header>
-    <section class="list">${all.length ? all.map(sessionRow).join('') : '<div class="empty">No exercises in this period.</div>'}</section></main>`;
+  return `<section><div class="label">Muscle activity · ${esc(label)}</div>${donutHtml(split, 'Training split, ' + label)}</section>`;
 }
 
 /* Streak: periods in a row where you hit your goal (or trained at least once without a goal).
@@ -1274,10 +1267,6 @@ function streakInfo() {
   return { n, per, need };
 }
 const fmtStreak = (st) => st.n + ' ' + st.per + (st.n === 1 ? '' : 's');
-function streakLineHtml() {
-  const st = streakInfo(); if (!st.n) return '';
-  return `<div class="small muted" id="streak">Streak: <span class="pos" style="font-weight:600">${fmtStreak(st)}</span> in a row${st.need > 1 ? ' hitting your goal' : ''}</div>`;
-}
 
 /* Goals: how often you hit the target you set */
 function goalPeriods() {
@@ -1708,8 +1697,13 @@ function recapRowsHtml() {
 }
 
 /* ---------- changelog ---------- */
-const VERSION = '0.7';
+const VERSION = '0.8';
 const CHANGELOG = [
+  ['0.8', [
+    ['Calendar of training days on Progress: tap a day to see the muscles you trained', 'Kalender over træningsdage under Fremgang: tryk på en dag for at se de muskler, du trænede'],
+    ['Leaner Progress screen, with the detailed stats behind More stats', 'Enklere Fremgang-side med de detaljerede tal under Flere tal'],
+    ['Body stats moved to Profile', 'Kropsmål er flyttet til Profil'],
+  ]],
   ['0.7', [
     ['Exercise menu: move up or down, notes, plate calculator and warm-up sets', 'Øvelsesmenu: flyt op eller ned, noter, skiveberegner og opvarmningssæt'],
     ['Notes on an exercise are shown again the next time you train it', 'Noter til en øvelse vises igen næste gang du træner den'],
@@ -1756,7 +1750,7 @@ function vChangelog() {
       ${items.map(([en, da]) => `<div class="row cl"><span>${esc(L(en, da))}</span></div>`).join('')}</section>`).join('')}</main>`;
 }
 
-const VIEWS = { badges: vBadges, recap: vRecap, changelog: vChangelog,  editWorkout: vEditWorkout, editProfile: vEditProfile, allEx: vAllEx, photo: vPhoto, summary: vSummary, goal: () => vGoal(true), customEx: vCustomEx, myEx: vMyEx, body: vBody, profile: vProfile, workoutDetail: vWorkoutDetail, welcome: vOnboarding, name: () => vName(true), today: vToday, workout: vWorkout, rest: vRest, routines: vRoutines, split: vSplit, day: vDay, picker: vPicker, progress: vProgress, lift: vLift, settings: vSettings, privacy: vPrivacy };
+const VIEWS = { badges: vBadges, recap: vRecap, changelog: vChangelog,  editWorkout: vEditWorkout, editProfile: vEditProfile, photo: vPhoto, summary: vSummary, goal: () => vGoal(true), customEx: vCustomEx, myEx: vMyEx, body: vBody, profile: vProfile, workoutDetail: vWorkoutDetail, welcome: vOnboarding, name: () => vName(true), today: vToday, workout: vWorkout, rest: vRest, routines: vRoutines, split: vSplit, day: vDay, picker: vPicker, progress: vProgress, lift: vLift, settings: vSettings, privacy: vPrivacy };
 function translate() { /* replaced by the language layer */ }
 function render() {
   $app.innerHTML = (VIEWS[ui.screen] || vToday)();
@@ -2384,8 +2378,17 @@ const A = {
   summaryDone() { ui.summary = null; ui.stack = []; ui.screen = 'today'; render(); window.scrollTo(0, 0); },
   // progress
   period(d) { ui.period = Number(d.p); render(); },
-  metric(d) { ui.metric = d.m; render(); },
-  openAllEx: () => go('allEx'),
+  calMove(d) { ui.calOff = Math.min(0, (ui.calOff || 0) + Number(d.d)); render(); },
+  calDay(d) {
+    const k = dayKey(Number(d.t)); const ws = state.history.filter((w) => dayKey(w.start) === k);
+    const ms = [...new Set(ws.flatMap((w) => w.ex.filter((e) => e.sets.some((x) => !isWarm(x))).map((e) => (exById(e.exId) || {}).muscle || 'Other')))];
+    openSheet(`<h2 id="mt">${new Date(Number(d.t)).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${ms.length ? ms.map((m) => `<span class="chip" style="display:inline-flex;align-items:center">${esc(m)}</span>`).join('') : '<span class="muted">No sets logged.</span>'}</div>
+      <div class="list">${ws.map((w) => `<button class="row" data-act="calOpen" data-id="${esc(w.id)}"><span class="row-main">${esc(w.name)}</span><span class="right">›</span></button>`).join('')}</div>
+      <button class="btn-quiet" data-act="modalCancel">Close</button>`);
+  },
+  calOpen(d) { closeModal(); A.openWorkout(d); },
+  moreStats() { ui.moreStats = !ui.moreStats; render(); },
   addPhoto() { const f = document.getElementById('photoFile'); f.value = ''; f.click(); },
   openPhoto: (d) => go('photo', { photoId: d.id }),
   askDeletePhoto() {

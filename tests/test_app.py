@@ -464,29 +464,21 @@ with sync_playwright() as p:
     check(page.locator("svg[role=img]").count() == 1, "lift detail shows chart")
     shot(page, "13_lift")
     act(page, "back"); expect(page.get_by_role("heading", name="Progress")).to_be_visible(); ok("lift back")
-    # muscle activity + top exercises
-    check(page.locator(".donut").count() == 1, "Progress shows training split donut")
-    tops = page.locator('section:has-text("Top exercises") [data-act="openLift"]').count()
-    check(tops == 3, f"top 3 exercises ({tops})")
+    # deep stats sit behind "More stats"
+    check(page.locator(".donut").count() == 0 and page.locator(".msrow").count() == 0, "deep stats hidden by default")
+    act(page, "moreStats")
+    check(page.locator(".donut").count() == 1, "More stats shows training split donut")
     shot(page, "12a_muscle_activity")
-    act(page, "openAllEx")
-    expect(page.get_by_role("heading", name="Exercises")).to_be_visible()
-    n_all = page.locator('[data-act="openLift"]').count()
-    check(n_all > 3, f"See more lists all exercises ({n_all})")
-    page.locator('[data-act="openLift"]').first.click()
-    check(page.get_by_role("button", name="Exercises").is_visible(), "lift detail goes back to Exercises")
-    act(page, "back"); act(page, "back")
-    expect(page.get_by_role("heading", name="Progress")).to_be_visible()
+    act(page, "moreStats")
+    # calendar of training days
+    check(page.locator(".cal").count() == 1, "Progress shows the training calendar")
+    page.locator('.cald.on').first.click()
+    check(page.locator(".sheet .chip").count() >= 1, "tapping a training day lists muscles")
+    act(page, "modalCancel")
     # flame number fits for big streaks
     widths = page.evaluate("""() => [1, 12, 123, 1000, 12345].map(n => { const d = document.createElement('div'); d.innerHTML = flameHtml(n, 'x'); document.body.appendChild(d);
         const w = d.querySelector('text').getBBox().width; d.remove(); return w; })""")
     check(all(w <= 46 for w in widths), f"flame number fits for 1…12345 (widths {[round(w) for w in widths]})")
-    # training chart
-    for m, end in (("reps", "reps"), ("time", " h"), ("volume", " kg")):
-        page.locator(f'[data-act="metric"][data-m="{m}"]').click()
-        check(page.locator("#trainTotal").inner_text().endswith(end), f"training chart: {m} ({page.locator('#trainTotal').inner_text()})")
-    check(page.locator(".gcol").count() == 12, "training chart has 12 weeks")
-    shot(page, "12b_training_chart")
     # e1RM confidence
     page.get_by_role("button", name=re.compile("^Lateral Raise")).last.click()
     check(page.locator(".big").first.inner_text().startswith("≈"), f"high-rep e1RM marked as rough ({page.locator('.big').first.inner_text()})")
@@ -495,8 +487,9 @@ with sync_playwright() as p:
     check("min" in page.locator(".big").first.inner_text(), "cardio detail page")
     act(page, "back")
 
-    # ---- Body stats in Progress
-    check(page.get_by_text("24,6 · Healthy weight").is_visible(), "Progress shows BMI from onboarding")
+    # ---- Body stats on Profile
+    page.locator('nav [data-s="profile"]').click()
+    check(page.get_by_text("24,6 · Healthy weight").is_visible(), "Profile shows BMI from onboarding")
     act(page, "openBody")
     expect(page.get_by_role("heading", name="Body")).to_be_visible()
     page.locator('[data-act="bodySex"][data-v="male"]').click()
@@ -513,10 +506,10 @@ with sync_playwright() as p:
     page.locator("#height").fill("50"); act(page, "saveBody")
     check("err" in page.locator("#height").get_attribute("class"), "invalid height rejected")
     page.locator("#height").fill("183"); act(page, "saveBody")
-    expect(page.get_by_role("heading", name="Progress")).to_be_visible(); ok("Save returns to Progress")
+    expect(page.get_by_role("heading", name="Profile")).to_be_visible(); ok("Save returns to Profile")
     check(st(page, "state.body.height") == 183 and st(page, "state.body.weights.length") == 1, "body stats stored")
-    check(page.get_by_text("24,6 · Healthy weight").is_visible(), "BMI shown on Progress")
-    shot(page, "13c_progress_body")
+    check(page.get_by_text("24,6 · Healthy weight").is_visible(), "BMI shown on Profile")
+    shot(page, "13c_profile_body")
     act(page, "openBody")
     page.locator('[data-act="fatMode"][data-m="manual"]').click()
     page.locator("#fatManual").fill("16"); page.locator("#weight").fill("83")
@@ -541,7 +534,7 @@ with sync_playwright() as p:
     with page.expect_file_chooser() as fc:
         act(page, "addPhoto")
     fc.value.set_files(f"{SHOTS}/photo2.png"); page.wait_for_selector(".pthumb")
-    page.reload(); page.locator('nav [data-s="progress"]').click(); act(page, "openBody"); page.wait_for_selector(".pthumb")
+    page.reload(); page.locator('nav [data-s="profile"]').click(); act(page, "openBody"); page.wait_for_selector(".pthumb")
     check(page.locator(".pthumb").count() == 1, "photo survives reload (IndexedDB)")
     act(page, "back")
 
@@ -841,17 +834,17 @@ with sync_playwright() as p:
     check(st(page, "ui.screen") == "workoutDetail" and "Edited session" in page.locator("h1").inner_text(), "back on the workout with the new name")
 
     # sets per muscle on Progress
-    page.evaluate("() => tab('progress')")
+    page.evaluate("() => tab('progress')"); act(page, "moreStats")
     check(page.locator(".msrow").count() >= 5 and page.locator(".mstick").count() == page.locator(".msrow").count(), "weekly sets per muscle with a 10-set marker")
     check(page.locator(".msfill.ok").count() >= 1, "muscles at 10+ sets are highlighted")
     shot(page, "81_progress_sets")
 
     # settings: version + changelog
     page.locator('nav [data-s="profile"]').click(); act(page, "openSettings")
-    check(page.locator("#appVersion").inner_text() == "0.7", "Settings shows version 0.7")
+    check(page.locator("#appVersion").inner_text() == "0.8", "Settings shows version 0.8")
     act(page, "openChangelog")
-    check(page.locator("#v0_7").is_visible() and page.locator("#v0_1").is_visible() and page.locator("#v0_7 .cl").count() >= 8, "changelog lists 0.7 down to 0.1")
-    check(page.locator("#v0_7").get_by_text("Current").is_visible(), "current version marked")
+    check(page.locator("#v0_8").is_visible() and page.locator("#v0_7").is_visible() and page.locator("#v0_1").is_visible() and page.locator("#v0_7 .cl").count() >= 8, "changelog lists 0.8 down to 0.1")
+    check(page.locator("#v0_8").get_by_text("Current").is_visible(), "current version marked")
     shot(page, "82_changelog")
     act(page, "back")
     expect(page.locator("#appVersion")).to_be_visible(); ok("changelog back returns to Settings")
@@ -859,7 +852,7 @@ with sync_playwright() as p:
     # PWA: manifest, icons and offline
     man = page.evaluate("() => fetch('manifest.webmanifest').then(r => r.json())")
     check(man["display"] == "standalone" and len(man["icons"]) == 3, "web app manifest with icons")
-    check(all(page.evaluate(f"() => fetch('{i['src']}').then(r => r.ok)") for i in man["icons"]) and page.evaluate("() => fetch('apple-touch-icon.png').then(r => r.ok)"), "all icons load")
+    check(all(page.evaluate(f"() => fetch('{i['src']}').then(r => r.ok)") for i in man["icons"]) and page.evaluate("() => fetch('icons/apple-touch-icon.png').then(r => r.ok)"), "all icons load")
     page.evaluate("() => navigator.serviceWorker.ready")
     page.reload(); page.evaluate("() => navigator.serviceWorker.ready"); time.sleep(0.5)
     check(page.evaluate("() => !!navigator.serviceWorker.controller"), "service worker controls the page")
